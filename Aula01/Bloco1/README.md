@@ -148,7 +148,7 @@ Quando sabemos que se refere à temperatura de uma pessoa, vira informação út
 
 **Objetivo:** Praticar a identificação e classificação de diferentes tipos de dados
 
-Acesse a atividade completa em: [📁 Atividade1/README.md](./Atividade1/README.md)
+Acesse a atividade completa em: [📁 Atividade/README.md](./Atividade/README.md)
 
 **Resumo da atividade:**
 - Classificar exemplos de dados quanto ao tipo
