@@ -266,7 +266,7 @@ lançamentos de tênis premium
 
 **Objetivo:** Praticar a transformação de dados em informação, conhecimento e sabedoria
 
-Acesse a atividade completa em: [📁 Atividade2/README.md](./Atividade2/README.md)
+Acesse a atividade completa em: [📁 Atividade/README.md](./Atividade/README.md)
 
 **Resumo da atividade:**
 - Transformar dados brutos em informação contextualizada
