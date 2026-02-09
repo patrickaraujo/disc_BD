@@ -253,7 +253,7 @@ Lembra das classificações de dados?
 
 **Objetivo:** Familiarizar-se com o ambiente e visualizar dados reais
 
-Acesse a atividade completa em: [📁 Atividade4/README.md](./Atividade4/README.md)
+Acesse a atividade completa em: [📁 Atividade/README.md](./Atividade/README.md)
 
 **Resumo da atividade:**
 - Conectar ao MySQL
