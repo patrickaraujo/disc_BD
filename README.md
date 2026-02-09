@@ -37,14 +37,15 @@ Cada aula é organizada internamente em **4 blocos didáticos**, combinando **co
 ## 📚 Ementa Detalhada
 
 ### Aula 01 — Fundamentos e Ambientação: Introdução a Banco de Dados
+- Visão geral da disciplina (ementa)
+- O que é BD, SGBD e Sistema de BD Importância dos dados nas organizações
 - Dados, informação, conhecimento e sabedoria (DIKW)
 - Tipos de dados: qualitativos, quantitativos, estruturados e não estruturados
 - Banco de Dados × SGBD × Sistema de BD
-- Importância dos dados nas organizações
-
-**Prática**
 - Apresentação do MySQL e MySQL Workbench
 - Visualização de tabelas reais (sem SQL)
+- Importância dos dados nas organizações
+
 
 ---
 
