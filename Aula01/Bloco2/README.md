@@ -244,16 +244,16 @@ lançamentos de tênis premium
 
 ```
 ┌─────────────────────────────────────────┐
-│ Sabedoria → Análise Preditiva          │
+│ Sabedoria → Análise Preditiva           │
 │             Machine Learning, IA        │
 ├─────────────────────────────────────────┤
-│ Conhecimento → Análise Descritiva      │
+│ Conhecimento → Análise Descritiva       │
 │                Data Analytics           │
 ├─────────────────────────────────────────┤
-│ Informação → Business Intelligence     │
+│ Informação → Business Intelligence      │
 │              Relatórios, Dashboards     │
 ├─────────────────────────────────────────┤
-│ Dados → ERPs, Sistemas de Gestão       │
+│ Dados → ERPs, Sistemas de Gestão        │
 │         Coleta e Armazenamento          │
 └─────────────────────────────────────────┘
 ```
