@@ -37,6 +37,14 @@ O DER é o **projeto de engenharia** do banco de dados. Cada decisão tomada aqu
 
 ---
 
+### Exemplo de MER
+
+> Representação visual dos elementos do Modelo Entidade-Relacionamento: entidades, atributos, relacionamentos e cardinalidades.
+
+![Exemplo de MER — Cliente e Compra](./img/mer_cliente_compra.png)
+
+---
+
 ### O que o DER possui?
 
 - Todas as **tabelas** e os **relacionamentos** entre elas
