@@ -109,7 +109,7 @@ Na barra de ferramentas lateral do canvas, localize o ícone de tabela (parece u
 | CodCidade   | INT          | ✅ | ✅ | ✅ |
 | Cidade      | VARCHAR(45)  |    | ✅ |    |
 
-- **AI** = Auto Increment — o SGBD preenche o valor automaticamente ([chave substituta/surrogate](../rodape/README.md))
+- **AI** = Auto Increment — o SGBD preenche o valor automaticamente ([chave substituta/surrogate](/rodape/README.md))
 
 ![Editor de tabela com a tabela Cidade configurada, mostrando CodCidade INT com PK e AI](./img/08-tabela-cidade.png)
 
