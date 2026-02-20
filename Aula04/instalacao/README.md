@@ -1,69 +1,90 @@
-# Aula 04 — Modelo Lógico (DER) + Primeira Prática no MySQL Workbench
+# Instalação do MySQL e MySQL Workbench
 
-Bem-vindo à **Aula 04**, a primeira aula com prática guiada da disciplina de **Banco de Dados**. Após três aulas de fundamentos conceituais e modelagem, chegou o momento de colocar as mãos na ferramenta e ver o DER virar banco de dados real.
-
-## 🎯 Objetivos da Aula
-* Consolidar os conceitos do Modelo Lógico (DER): tabelas, atributos, chaves e cardinalidades.
-* Compreender os tipos de chave: primária, composta, substituta, secundária e estrangeira.
-* Criar um DER no MySQL Workbench usando o editor visual (EER Diagram).
-* Executar o **Forward Engineering** para gerar o banco físico automaticamente.
-* Verificar na prática o funcionamento da integridade referencial.
+Escolha o seu sistema operacional e siga as instruções correspondentes.
 
 ---
 
-## 📂 Organização dos Blocos
+## 📖 Conceitos Fundamentais
 
-### [Bloco 01 — Do MER ao DER: Revisão e Preparação para a Prática](./Bloco1/README.md)
-* **Foco:** Revisão conceitual do DER antes de usar a ferramenta.
-* **Destaque:** Tipos de chave (PK, composta, surrogate, secundária, FK), notação de Pé-de-Galinha e Dicionário de Dados.
+### O que é o MySQL?
 
-### [Bloco 02 — Mãos na Massa: DER e Modelo Físico no MySQL Workbench](./Bloco2/README.md)
-* **Foco:** Prática guiada no MySQL Workbench.
-* **Destaque:** Criar tabelas, definir colunas e chaves, relacionar tabelas e gerar o banco físico via Forward Engineering.
-  * [Tutorial Passo a Passo — Forward Engineering](./Bloco2/Atividade/README.md)
+O MySQL é um **SGBD (Sistema de Gerenciamento de Banco de Dados) Relacional** — o software responsável por armazenar, processar e organizar os dados. Ele roda como um serviço em segundo plano (localmente ou em nuvem) e, por padrão, é acessado via linha de comando. Sozinho, não possui interface gráfica.
 
----
+### O que é o MySQL Workbench?
 
-## 🚀 Como estudar este conteúdo
-1. Leia o **Bloco 1** para revisar os conceitos e entender o que você vai fazer na ferramenta.
-2. Abra o **MySQL Workbench** e siga o tutorial do **Bloco 2** passo a passo.
-3. Não pule etapas — cada clique no Workbench corresponde a uma decisão de modelagem que você aprendeu na teoria.
+O MySQL Workbench é a **ferramenta visual oficial da Oracle** para interagir com o MySQL. Ele reúne em um único ambiente:
 
----
+- **Editor SQL** — com realce de sintaxe e autocompletar para escrever e executar consultas.
+- **Modelagem ER** — criação visual de diagramas de Entidade-Relacionamento com geração automática de código SQL (*Forward Engineering*).
+- **Administração** — gerenciamento de usuários, backups, monitoramento de performance (CPU, conexões, I/O) e visualização de logs.
 
-## 🛠️ Pré-requisito: MySQL e MySQL Workbench instalados?
+### MySQL vs. MySQL Workbench
 
-Para acompanhar a parte prática desta aula você precisa ter o **MySQL** e o **MySQL Workbench** instalados e funcionando na sua máquina.
+Para simplificar: o MySQL é o **motor** e o Workbench é o **painel de controle**.
 
-> ⚠️ **Ainda não instalou, ou está com dúvidas na configuração?** Acesse o guia de instalação correspondente ao seu sistema operacional antes de continuar:
+| Característica | MySQL (Servidor) | MySQL Workbench (Cliente) |
+|---|---|---|
+| Natureza | O banco de dados em si | Software de interface |
+| Função | Armazena e processa os dados | Visualiza e manipula dados e estrutura |
+| Interface | Linha de comando | Gráfica (menus, diagramas, tabelas) |
+| Dependência | Funciona de forma independente | Requer um servidor MySQL para conectar |
 
-➡️ [Guia de Instalação — MySQL e MySQL Workbench](./instalacao/README.md)
-
-O guia cobre instalação no **Windows**, **macOS** e **Linux Mint/Ubuntu**, além de explicar como configurar a conexão no Workbench após a instalação.
+> O MySQL funciona sem o Workbench, mas o Workbench não funciona sem o MySQL.
 
 ---
 
-## 📌 Importante
-* Esta é a **primeira aula prática** da disciplina — o objetivo é familiarização com a ferramenta.
-* O modelo construído aqui (Estado × Cidade) é simples de propósito: o foco é o **processo**, não a complexidade.
-* Nas próximas aulas de laboratório você vai construir modelos com mais tabelas.
+## 🪟 Windows
+
+Instalação do **MySQL** e **MySQL Workbench** no Windows:
+
+[![Instalar MySQL e MySQL Workbench no Windows](https://img.youtube.com/vi/a5ul8o76Hqw/0.jpg)](https://www.youtube.com/watch?v=a5ul8o76Hqw)
+
+🔗 [https://www.youtube.com/watch?v=a5ul8o76Hqw](https://www.youtube.com/watch?v=a5ul8o76Hqw)
 
 ---
 
-### Estrutura de pastas da `Aula04`:
+## 🍎 macOS
 
-```
-Aula04/
-├── Bloco1/
-│   └── README.md (Do MER ao DER: revisão conceitual)
-├── Bloco2/
-│   ├── README.md (Prática no Workbench — Forward Engineering)
-│   └── Atividade/
-│       └── README.md (Tutorial passo a passo)
-├── instalacao/
-│   └── README.md (Guia de instalação — Windows, macOS e Linux)
-└── README.md (Este arquivo)
-```
+### MySQL
+
+Instalação do **MySQL** no macOS:
+
+[![Instalar MySQL no macOS](https://img.youtube.com/vi/gcXp4b-XIxw/0.jpg)](https://www.youtube.com/watch?v=gcXp4b-XIxw)
+
+🔗 [https://www.youtube.com/watch?v=gcXp4b-XIxw](https://www.youtube.com/watch?v=gcXp4b-XIxw)
+
+### MySQL Workbench
+
+Instalação do **MySQL Workbench** no macOS:
+
+[![Instalar MySQL Workbench no macOS](https://img.youtube.com/vi/eonNlFxcDKw/0.jpg)](https://www.youtube.com/watch?v=eonNlFxcDKw)
+
+🔗 [https://www.youtube.com/watch?v=eonNlFxcDKw](https://www.youtube.com/watch?v=eonNlFxcDKw)
+
 ---
 
-> 💭 *"O DER é o projeto. O Forward Engineering é a obra. Sem um bom projeto, a obra vai ao chão."*
+## 🐧 Linux Mint / Ubuntu
+
+Para Linux Mint e Ubuntu, siga os tutoriais escritos disponíveis na pasta `linuxMint-Ubuntu`:
+
+### 1. Instalação do MySQL
+
+> Cobre a instalação completa do MySQL Community Server e configuração segura via terminal.
+
+➡️ [Acessar tutorial de instalação do MySQL](linuxMint-Ubuntu/README.md)
+
+### 2. Instalação do MySQL Workbench
+
+> Cobre o download e instalação da interface gráfica oficial do MySQL.
+
+➡️ [Acessar tutorial de instalação do MySQL Workbench](linuxMint-Ubuntu/1-instalacao_do_MySQL_Workbench_para_Linux_Mint-Ubuntu.md)
+
+### 3. Configuração da Conexão no MySQL Workbench
+
+> Cobre a criação de usuário e configuração da conexão no Workbench.
+
+➡️ [Acessar tutorial de configuração da conexão](linuxMint-Ubuntu/2-configconexao.md)
+
+---
+
+> 💡 **Dica:** Independente do sistema operacional, após a instalação certifique-se de que o serviço do MySQL está ativo antes de usar o Workbench.
