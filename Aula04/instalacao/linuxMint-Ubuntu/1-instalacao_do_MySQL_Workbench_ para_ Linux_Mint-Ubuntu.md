@@ -106,3 +106,10 @@ Clique nela para conectar e começar a usar!
 - Certifique-se de que o **MySQL Server já está instalado e rodando** antes de usar o Workbench.
 - O Workbench conecta automaticamente ao MySQL local instalado na sua máquina.
 - Caso a conexão falhe, verifique se o serviço está ativo com `sudo systemctl status mysql`.
+
+
+---
+
+## Próximos Passos
+
+➡️ [Configuração da Conexão no MySQL Workbench](config_Conexao.md) — Como configurar o usuário e conectar ao banco
