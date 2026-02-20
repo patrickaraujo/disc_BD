@@ -73,13 +73,13 @@ Siga o passo a passo completo em: [📁 Atividade/README.md](./Atividade/README.
 **O que você vai construir:**
 
 ```
-┌─────────────────────┐         ┌────────────────────────────┐
-│       Estado        │         │          Cidade             │
-├─────────────────────┤         ├────────────────────────────┤
-│ 🔑 SiglaUF VARCHAR(2)│ 1──── N │ 🔑 CodCidade INT (AI)      │
-│    Estado VARCHAR(45)│         │    Cidade VARCHAR(45)      │
-└─────────────────────┘         │  🔗 Estado_SiglaUF VARCHAR(2)│
-                                └────────────────────────────┘
+┌──────────────────────┐         ┌──────────────────────────────┐
+│       Estado         │         │          Cidade              │
+├──────────────────────┤         ├──────────────────────────────┤
+│ 🔑 SiglaUF VARCHAR(2)│ 1──── N │ 🔑 CodCidade INT (AI)        │
+│    Estado VARCHAR(45)│         │    Cidade VARCHAR(45)        │
+└──────────────────────┘         │  🔗 Estado_SiglaUF VARCHAR(2)│
+                                 └──────────────────────────────┘
 ```
 
 **Resumo dos passos:**
