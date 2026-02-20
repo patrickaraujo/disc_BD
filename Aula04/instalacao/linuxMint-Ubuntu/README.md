@@ -131,6 +131,6 @@ Dentro do prompt `mysql>`, você pode usar os seguintes comandos:
 
 Com o MySQL instalado e funcionando, siga para os próximos tutoriais:
 
-➡️ [Instalação do MySQL Workbench](./1-instalacao_do_MySQL_Workbench_ para_ Linux_Mint-Ubuntu.md) — Interface gráfica para gerenciar o banco de dados
+➡️ [Instalação do MySQL Workbench](./1-instalacao_do_MySQL_Workbench_para_Linux_Mint-Ubuntu.md) — Interface gráfica para gerenciar o banco de dados
 
 ➡️ [Configuração da Conexão no MySQL Workbench](./2-configConexao.md) — Como configurar o usuário e conectar ao banco
