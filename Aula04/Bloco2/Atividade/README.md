@@ -214,25 +214,25 @@ No Query Editor, execute:
 USE mydb;
 
 -- Inserir um estado
-INSERT INTO estado VALUES ('SP', 'SÃO PAULO');
+INSERT INTO Estado VALUES ('SP', 'SÃO PAULO');
 
 -- Consultar o estado inserido
-SELECT * FROM estado;
+SELECT * FROM Estado;
 ```
 
 Agora insira uma cidade vinculada ao estado:
 
 ```sql
 -- Inserir cidade com FK válida
-INSERT INTO cidade (cidade, estado_siglaUF) VALUES ('CARAPICUÍBA', 'SP');
+INSERT INTO Cidade (Cidade, Estado_siglaUF) VALUES ('CARAPICUÍBA', 'SP');
 
 -- Tentar inserir cidade com FK inválida (vai falhar!)
-INSERT INTO cidade (cidade, estado_siglaUF) VALUES ('CARAPICUÍBA', 'RJ');
+INSERT INTO Cidade (Cidade, Estado_siglaUF) VALUES ('CARAPICUÍBA', 'RJ');
 -- Erro: Cannot add or update a child row: a foreign key constraint fails
 
 -- Consultar as tabelas
-SELECT * FROM estado;
-SELECT * FROM cidade;
+SELECT * FROM Estado;
+SELECT * FROM Cidade;
 ```
 
 > 💡 **Integridade Referencial na prática:** o MySQL bloqueou a inserção de uma cidade com `estado_siglaUF = 'RJ'` porque não existe o estado `'RJ'` cadastrado. A FK garante que os dados sempre sejam consistentes.
