@@ -72,9 +72,9 @@ Disallow root login remotely? (y/N): Y
 
 **Remove test database?**
 ```
-Remove test database and access to it? (y/N): Y
+Remove test database and access to it? (y/N): N
 ```
-> Remove o banco de dados de teste padrão, que não tem utilidade prática.
+> Remove o banco de dados de teste padrão, optamos por manter.
 
 **Reload privilege tables?**
 ```
