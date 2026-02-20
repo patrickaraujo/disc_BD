@@ -31,23 +31,22 @@ Bem-vindo à **Aula 04**, a primeira aula com prática guiada da disciplina de *
 
 ---
 
+## 🛠️ Pré-requisito: MySQL e MySQL Workbench instalados?
+
+Para acompanhar a parte prática desta aula você precisa ter o **MySQL** e o **MySQL Workbench** instalados e funcionando na sua máquina.
+
+> ⚠️ **Ainda não instalou, ou está com dúvidas na configuração?** Acesse o guia de instalação correspondente ao seu sistema operacional antes de continuar:
+
+➡️ [Guia de Instalação — MySQL e MySQL Workbench](./instalacao/README.md)
+
+O guia cobre instalação no **Windows**, **macOS** e **Linux Mint/Ubuntu**, além de explicar como configurar a conexão no Workbench após a instalação.
+
+---
+
 ## 📌 Importante
 * Esta é a **primeira aula prática** da disciplina — o objetivo é familiarização com a ferramenta.
 * O modelo construído aqui (Estado × Cidade) é simples de propósito: o foco é o **processo**, não a complexidade.
 * Nas próximas aulas de laboratório você vai construir modelos com mais tabelas.
-
----
-
-## 📍 Posição no Cronograma
-
-| Aula | Data | Conteúdo |
-|------|------|----------|
-| 01 | 04/02 | Apresentação, plano pedagógico, contexto (ARQ01) |
-| 02 | 09/02 | Introdução a BD — SGBD, arquitetura, papéis (ARQ02) |
-| 03 | 11/02, 23/02, 25/02 | Modelagem Conceitual — MER (ARQ03) |
-| **04** | **04/03** | **← VOCÊ ESTÁ AQUI** — DER + primeira prática no Workbench (ARQ04) |
-| 05 | 09/03 | Laboratório — DER completo no Workbench |
-| 06 | 11/03 | Normalização — 1ª a 4ª Forma Normal |
 
 ---
 
@@ -61,9 +60,10 @@ Aula04/
 │   ├── README.md (Prática no Workbench — Forward Engineering)
 │   └── Atividade/
 │       └── README.md (Tutorial passo a passo)
+├── instalacao/
+│   └── README.md (Guia de instalação — Windows, macOS e Linux)
 └── README.md (Este arquivo)
 ```
-
 ---
 
 > 💭 *"O DER é o projeto. O Forward Engineering é a obra. Sem um bom projeto, a obra vai ao chão."*
