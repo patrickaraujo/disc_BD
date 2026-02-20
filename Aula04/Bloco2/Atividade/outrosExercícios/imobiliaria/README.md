@@ -105,3 +105,21 @@ Table ItensMobilia {
 **Mobilia** — catálogo dos itens de mobília (cama, geladeira, freezer, etc.).
 
 **ItensMobilia** — tabela associativa que registra quais móveis estão em cada imóvel e em qual quantidade.
+
+---
+
+## Quadro 3.4 | Dicionário de dados da tabela imóvel
+
+### Tabela: imóvel
+
+| | Campo | Descrição | Tipo | Tamanho |
+|---|---|---|---|---|
+| PK | NrImóvel | Número do imóvel | Varchar | 20 |
+| | QtdeQuartos | Quantidade de quartos | Inteiro | - |
+| | QtdeBanheiros | Quantidade de banheiros | Inteiro | - |
+| | VistaParaMar? | Tem vista para o mar? | Boolean | True / False |
+| | Endereço | Endereço completo | Varchar | 150 |
+| FK | IdTpImóvel | Tipo do imóvel (apart, casa) | Inteiro | - |
+| FK | CodCidade | Cidade | Inteiro | - |
+| FK | IdPraia | Praia mais próxima | Inteiro | - |
+| FK | IdProprietário | Proprietário | Inteiro | - |
