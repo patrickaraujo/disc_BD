@@ -1,8 +1,17 @@
 # Imobiliária - Diagrama de Banco de Dados
 
 ## Descrição da Situação-Problema
-Seu chefe necessita de ajuda no levantamento das entidades envolvidas no próximo banco de dados a ser desenvolvido. Você precisa realizar o levantamento das entidades para uma escola de ensino fundamental e médio que necessita de um banco de dados para controle acadêmico.
-Será necessário armazenar informações sobre alunos, professores, disciplinas, cursos e departamentos. Um dos principais desafios da escola é a geração dos horários dos alunos, considerando que cada aluno pode cursar várias disciplinas em diferentes horários ao longo do período letivo.
+Uma imobiliária especializada em aluguel de casas e apartamentos do litoral de Santa Catarina necessita de um software para ajudar no gerenciamento dos aluguéis e oferecer melhores ofertas para seus clientes. Após diversos contatos com a imobiliária, ficou estabelecido que os seguintes requisitos deveriam ser atendidos pelo banco de dados:
+
+- **Para cada imóvel deverá ter registrado:** seu tipo (casa ou apartamento), quantidade de quartos e banheiros, se possui vista para o mar e preço da diária.
+
+- As informações dos proprietários e dos inquilinos deverão ser armazenadas separadamente. Os proprietários podem ter vários imóveis que podem ser alugados para vários inquilinos.
+
+- Além das informações sobre o município ao qual o imóvel pertence, deverá também ser informado o nome da praia mais próxima a ele.
+
+- Os imóveis são todos os itens que compõem a mobília, e os mais verificados são: cama, geladeira, freezer, televisor, ar-condicionado, entre outros. Neste caso, é importante que seja informada a quantidade de cada item.
+
+- Deverá ser realizado e registrado um contrato exclusivo para os aluguéis com os inquilinos e os imóveis respectivamente alugados por eles.
 
 ---
 
