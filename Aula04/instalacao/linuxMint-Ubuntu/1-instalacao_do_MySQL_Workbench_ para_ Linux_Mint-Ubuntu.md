@@ -112,4 +112,4 @@ Clique nela para conectar e começar a usar!
 
 ## Próximos Passos
 
-➡️ [Configuração da Conexão no MySQL Workbench](config_Conexao.md) — Como configurar o usuário e conectar ao banco
+➡️ [Configuração da Conexão no MySQL Workbench](./2-configConexao.md) — Como configurar o usuário e conectar ao banco
