@@ -124,3 +124,13 @@ Dentro do prompt `mysql>`, você pode usar os seguintes comandos:
 - A versão instalada por padrão via `apt` é o **MySQL 8.0**.
 - Para instalar uma versão específica (como MySQL 9.x), é necessário adicionar o repositório oficial da Oracle.
 - Para uso em produção, considere criar usuários específicos em vez de usar o root.
+
+---
+
+## Próximos Passos
+
+Com o MySQL instalado e funcionando, siga para os próximos tutoriais:
+
+➡️ [Instalação do MySQL Workbench](instalação_do_MySQL_Workbench_para__Linux_Mint-Ubuntu.md) — Interface gráfica para gerenciar o banco de dados
+
+➡️ [Configuração da Conexão no MySQL Workbench](config_Conexao.md) — Como configurar o usuário e conectar ao banco
