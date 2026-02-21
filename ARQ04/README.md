@@ -1,6 +1,6 @@
-# Aula 04 — Modelo Lógico (DER) + Primeira Prática no MySQL Workbench
+# Aula ARQ04 — Modelo Lógico (DER) + Primeira Prática no MySQL Workbench
 
-Bem-vindo à **Aula 04**, a primeira aula com prática guiada da disciplina de **Banco de Dados**. Após três aulas de fundamentos conceituais e modelagem, chegou o momento de colocar as mãos na ferramenta e ver o DER virar banco de dados real.
+Bem-vindo à **Aula ARQ04**, a primeira aula com prática guiada da disciplina de **Banco de Dados**. Após três aulas de fundamentos conceituais e modelagem, chegou o momento de colocar as mãos na ferramenta e ver o DER virar banco de dados real.
 
 ## 🎯 Objetivos da Aula
 * Consolidar os conceitos do Modelo Lógico (DER): tabelas, atributos, chaves e cardinalidades.
@@ -50,10 +50,10 @@ O guia cobre instalação no **Windows**, **macOS** e **Linux Mint/Ubuntu**, al�
 
 ---
 
-### Estrutura de pastas da `Aula04`:
+### Estrutura de pastas da Aula `ARQ04`:
 
 ```
-Aula04/
+ARQ04/
 ├── Bloco1/
 │   └── README.md (Do MER ao DER: revisão conceitual)
 ├── Bloco2/
