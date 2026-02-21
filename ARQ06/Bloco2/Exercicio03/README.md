@@ -122,7 +122,7 @@ CREATE TABLE `TabFilha` (
 ### 6. Inspecionar a estrutura da tabela filha
 
 ```sql
-DESCRIBE tabfilha;
+DESCRIBE TabFilha;
 ```
 
 Resultado esperado:
