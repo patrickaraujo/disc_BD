@@ -1,6 +1,6 @@
 # Aula ARQ06 — Praticar a Construção do DER e Modelo Físico com o Workbench
 
-Bem-vindo à **Aula 05**, aula de laboratório da disciplina de **Banco de Dados**. O foco desta aula é 100% prático: você vai criar um DER no Workbench, gerar o banco físico, destruí-lo, recriá-lo a partir do script e, por fim, praticar os principais comandos DDL do SQL diretamente no Query Editor.
+Bem-vindo à **Aula ARQ06**, aula de laboratório da disciplina de **Banco de Dados**. O foco desta aula é 100% prático: você vai criar um DER no Workbench, gerar o banco físico, destruí-lo, recriá-lo a partir do script e, por fim, praticar os principais comandos DDL do SQL diretamente no Query Editor.
 
 ## 🎯 Objetivos da Aula
 * Criar um DER com PK simples, PK composta e FK no MySQL Workbench.
@@ -53,10 +53,10 @@ Bem-vindo à **Aula 05**, aula de laboratório da disciplina de **Banco de Dados
 
 ---
 
-### Estrutura de pastas da `Aula05`:
+### Estrutura de pastas da Aula `ARQ06`:
 
 ```
-Aula05/
+ARQ06/
 ├── Bloco1/
 │   ├── README.md
 │   └── Exercicio01/
