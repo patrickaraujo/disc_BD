@@ -1,3 +1,5 @@
+# O que é um '_schema_'?
+
 Pense no **schema** (esquema) como uma pasta ou um contêiner dentro do seu servidor de banco de dados. É a estrutura que organiza e agrupa todos os seus objetos, como tabelas, visões e procedimentos.
 
 No contexto do SQL que você compartilhou (especialmente se estiver usando MySQL ou MariaDB), **Schema** e **Database** são praticamente sinônimos.
