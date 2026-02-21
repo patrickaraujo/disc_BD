@@ -23,6 +23,6 @@ Para facilitar a visualização, imagine a seguinte hierarquia:
 ### No seu código:
 
 * `CREATE SCHEMA IF NOT EXISTS`: Garante que a "pasta" seja criada apenas se ela ainda não existir, evitando erros.
-* `USE `mydb``: Diz ao sistema: "A partir de agora, tudo o que eu fizer será dentro desta pasta específica".
+* `USE 'mydb'`: Diz ao sistema: "A partir de agora, tudo o que eu fizer será dentro desta pasta específica".
 
 **Curiosidade técnica:** Em alguns bancos de dados mais robustos, como o PostgreSQL ou Oracle, existe uma distinção real onde um *Database* pode conter vários *Schemas*. No MySQL, eles tratam os dois como a mesma coisa.
