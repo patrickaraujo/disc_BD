@@ -88,7 +88,7 @@ CREATE TABLE `TabMae` (
 ### 4. Inspecionar a estrutura da tabela
 
 ```sql
-DESCRIBE tabmae;
+DESCRIBE TabMae;
 ```
 
 Resultado esperado:
