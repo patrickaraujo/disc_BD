@@ -11,22 +11,22 @@ O foco inicial é **formação conceitual sólida**, alinhada à Pirâmide DIKW,
 
 ```text
 .
-├── Aula01/
-├── Aula02/
-├── Aula03/
-├── Aula04/
-├── Aula05/
-├── Aula06/
-├── Aula07/
-├── Aula08/
-├── Aula09/
-├── Aula10/
-├── Aula11/
-├── Aula12/
-├── Aula13/
-├── Aula14/
-├── Aula15/
-├── Aula16/
+├── ARQ04/
+├── ARQ02/
+├── ARQ03/
+├── ARQ04/
+├── ARQ05/
+├── ARQ06/
+├── ARQ07/
+├── ARQ08/
+├── ARQ09/
+├── ARQ10/
+├── ARQ11/
+├── ARQ12/
+├── ARQ13/
+├── ARQ14/
+├── ARQ15/
+├── ARQ16/
 └── README.md
 ```
 
