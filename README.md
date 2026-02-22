@@ -3,7 +3,7 @@
 Repositório destinado ao armazenamento de **materiais, arquivos, exercícios e práticas** da disciplina de **Banco de Dados**.  
 O curso aborda desde os **fundamentos conceituais sobre dados e informação**, passando por **modelagem conceitual e relacional**, até **SQL, transações e apoio à decisão**, utilizando o **MySQL** como SGBD de referência.
 
-O foco inicial é **formação conceitual sólida**, alinhada à Pirâmide DIKW, tipos de dados e organização da informação.
+<!--O foco inicial é **formação conceitual sólida**, alinhada à Pirâmide DIKW, tipos de dados e organização da informação.-->
 
 ---
 
