@@ -12,30 +12,77 @@ O curso aborda desde os **fundamentos conceituais sobre dados e informação**, 
 ```text
 .
 ├── ARQ04/
-├── ARQ02/
-├── ARQ03/
-├── ARQ04/
-├── ARQ05/
 ├── ARQ06/
-├── ARQ07/
-├── ARQ08/
-├── ARQ09/
-├── ARQ10/
-├── ARQ11/
-├── ARQ12/
-├── ARQ13/
-├── ARQ14/
-├── ARQ15/
-├── ARQ16/
 └── README.md
 ```
 
-Cada aula é organizada internamente em **4 blocos didáticos**, combinando **conceito, observação, prática guiada e consolidação**.
+Cada aula é organizada internamente em **2 blocos didáticos**, combinando **conceito, observação, prática guiada e consolidação**.
 
 ---
 
 ## 📚 Ementa Detalhada
 
+---
+
+## 📅 📌 CALENDÁRIO – AULAS PRÁTICAS
+
+---
+
+### 🔹 MARÇO – MODELAGEM E WORKBENCH
+
+| Tema                                                                   | Local       |
+| ---------------------------------------------------------------------- | ----------- |
+| Modelo Lógico – DER + exercícios + introdução ao Modelo Físico (ARQ04) | Sala        |
+| Construção do DER e Modelo Físico no Workbench (ARQ06)                 | Laboratório |
+| Alterando DER e sincronizando com BD (ARQ07)                           | Laboratório |
+| Construção do DER – exercício com 9 tabelas (ARQ08)                    | Laboratório |
+
+---
+
+### 🔹 MARÇO / ABRIL – SQL NA PRÁTICA
+
+| Tema                                                                      | Local       |
+| ------------------------------------------------------------------------- | ----------- |
+| SQL prática + iniciar COMANDOS-BD-01                                      | Laboratório |
+| Finalizar COMANDOS-BD-01 + iniciar objetos armazenados (ARQ11/12 + BD-02) | Laboratório |
+| Stored Procedure, Trigger, Function e View – prática                      | Laboratório |
+
+---
+
+### 🔹 ABRIL / MAIO – CONTROLE TRANSACIONAL (SEU BLOCO FORTE 🔥)
+
+| Tema                                                  | Local       |
+| ----------------------------------------------------- | ----------- |
+| Controle Transacional – prática (ARQ13/15 + BD-03/04) | Laboratório |
+| Controle Transacional – prática                       | Laboratório |
+| Controle Transacional – prática                       | Laboratório |
+| Controle Transacional – prática                       | Laboratório |
+
+---
+
+### 📊 Resumo da Carga Prática
+
+* ✅ 4 aulas – Modelagem prática
+* ✅ 3 aulas – SQL prática
+* ✅ 4 aulas – Transações práticas
+
+📌 **Total: 11 aulas práticas**
+
+---
+
+### 🎯 Perfil das Aulas:
+
+* Construção real de DER
+* Workbench
+* SQL executando código
+* Stored Procedure
+* Trigger
+* Function
+* Controle de transações
+* Lock e concorrência
+* Sistema financeiro prático
+
+<!--
 ### Aula 01 — Fundamentos e Ambientação: Introdução a Banco de Dados
 - Visão geral da disciplina (ementa)
 - O que é BD, SGBD e Sistema de BD Importância dos dados nas organizações
@@ -133,6 +180,7 @@ Cada aula é organizada internamente em **4 blocos didáticos**, combinando **co
 
 ### Aula 16 — Avaliação Final / Encerramento
 - Avaliação prática ou projeto em grupo
+-->
 
 ---
 
