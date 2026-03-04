@@ -93,7 +93,7 @@ Na barra de ferramentas lateral do canvas, localize o ícone de tabela (parece u
 | CodCidade   | INT          | ✅ | ✅ | ✅ |
 | Cidade      | VARCHAR(45)  |    | ✅ |    |
 
-- **AI** = Auto Increment — o SGBD preenche o valor automaticamente ([chave substituta/surrogate](./rodape/README.md))
+- **AI** = Auto Increment — o SGBD preenche o valor automaticamente ([chave substituta/surrogate](./rodape/Relacionamentos-id_Nid.md))
 
 > 💡 **CodCidade** é um exemplo de **chave substituta (surrogate key)**: um inteiro auto-incremento criado pelo SGBD quando não existe um campo naturalmente único na entidade.
 
@@ -103,7 +103,7 @@ Na barra de ferramentas lateral do canvas, localize o ícone de tabela (parece u
 
 O relacionamento define a **chave estrangeira (FK)** automaticamente.
 
-1. Na barra lateral, localize o conector **1:n** (relacionamento um para muitos) e clique nele
+1. Na barra lateral, localize o conector identificador **1:n** ([relacionamento identificador um para muitos](./rodape/SurrogateKey.md)) e clique nele
 2. Clique primeiro na tabela **filho** (`Cidade`) e depois na tabela **pai** (`Estado`)
 3. O Workbench cria a FK automaticamente: a coluna `Estado_SiglaUF` aparece em `Cidade`
 
