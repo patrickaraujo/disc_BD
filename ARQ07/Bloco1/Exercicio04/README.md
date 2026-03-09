@@ -97,7 +97,7 @@ DER (modelo .mwb)               Banco Físico (MySQL)
    ADD COLUMN `NovaColuna` VARCHAR(40) GENERATED ALWAYS AS (`DescMae`) VIRTUAL AFTER `DescMae`
    ```
 
-   > 💡 Se aparecerem diferenças em `TabFilha` que você não quer aplicar (por exemplo, resquícios do Exercício 03), selecione a linha da `TabFilha` e clique em **Ignore** para ignorá-la.
+   > 💡 Ao realizar a sincronização da TabFilha, fique atento aos ícones de status para garantir a integridade dos dados. A seta verde (➡️) indica que a tabela está pronta para ser atualizada, enquanto o ícone vermelho (❌) sinaliza um conflito ou incompatibilidade, geralmente causado por divergências em nomes de colunas, tipos de dados, chaves estrangeiras ou tabelas criadas manualmente que não batem com o modelo. Caso identifique diferenças que não devam ser aplicadas, como resquícios do Exercício 03, basta selecionar a linha correspondente na TabFilha e clicar em Ignore para desconsiderar a alteração.
 
 8. Clique em **Next** para avançar para **Review DB Changes**
 
