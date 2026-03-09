@@ -1,187 +1,81 @@
-# Banco de Dados
+# Aula ARQ07 — Sincronização DER ↔ Banco de Dados + Tipos de Dados no MySQL
 
-Repositório destinado ao armazenamento de **materiais, arquivos, exercícios e práticas** da disciplina de **Banco de Dados**.  
-O curso aborda desde os **fundamentos conceituais sobre dados e informação**, passando por **modelagem conceitual e relacional**, até **SQL, transações e apoio à decisão**, utilizando o **MySQL** como SGBD de referência.
+Bem-vindo à **Aula ARQ07**, aula de laboratório da disciplina de **Banco de Dados**. O foco desta aula é resolver um problema real que surge quando alteramos a estrutura do banco: **como manter o DER e o banco físico sempre sincronizados?** Além disso, você vai conhecer as propriedades das colunas e os tipos de dados disponíveis no MySQL.
 
-<!--O foco inicial é **formação conceitual sólida**, alinhada à Pirâmide DIKW, tipos de dados e organização da informação.-->
+## 🎯 Objetivos da Aula
+* Compreender o risco de desatualização entre o DER e o banco físico ao executar comandos manuais.
+* Alterar o DER no Workbench e sincronizar as mudanças com o banco via **Forward Engineering (Synchronize Model)**.
+* Alterar o banco físico via SQL e sincronizar o DER via **Reverse Engineering**.
+* Conhecer as propriedades de colunas do Workbench (PK, NN, UQ, UN, ZF, AI, G, B).
+* Consultar a referência completa dos tipos de dados do MySQL (numéricos, data/hora e texto).
 
 ---
 
-## 📂 Estrutura do Repositório
+## 📂 Organização dos Blocos
 
-```text
-.
-├── ARQ04/
-├── ARQ06/
-└── README.md
+### [Bloco 01 — Do DER para o Banco: Forward Engineering Sync](./Bloco1/README.md)
+* **Foco:** Alterar o DER (modelo `.mwb`) e propagar as mudanças para o banco físico sem recriá-lo do zero.
+* **Exercício:**
+  * [Exercício 04 — Alterar o DER e Sincronizar com o BD](./Bloco1/Exercicio04/README.md)
+
+### [Bloco 02 — Do Banco para o DER: Reverse Engineering + Referência de Tipos](./Bloco2/README.md)
+* **Foco:** Alterar o banco físico via SQL e gerar/atualizar o DER a partir do banco existente. Material de referência sobre propriedades de colunas e tipos de dados.
+* **Exercício:**
+  * [Exercício 05 — Alterar o BD e Sincronizar com o DER](./Bloco2/Exercicio05/README.md)
+* **Material de Referência:**
+  * [Propriedades de Colunas no Workbench](./Bloco2/referencia/propriedades-colunas.md)
+  * [Tipos de Dados do MySQL](./Bloco2/referencia/tipos-de-dados.md)
+
+---
+
+## 🚀 Como estudar este conteúdo
+1. Certifique-se de ter o schema `mydb` com `TabMae` e `TabFilha` criados (resultado da Aula 06).
+2. No **Bloco 1**, siga o Exercício 04 — altere o DER e sincronize com o banco.
+3. Consulte o **material de referência** do Bloco 2 para entender as propriedades de colunas e tipos de dados.
+4. No **Bloco 2**, siga o Exercício 05 — altere o banco e sincronize com o DER.
+5. Ao finalizar, garanta que DER e banco estejam sincronizados para as próximas aulas.
+
+---
+
+## 📌 Importante
+* O problema central desta aula é a **desatualização** — se você altera o banco manualmente (como fez no Exercício 03), o DER fica desatualizado e vice-versa.
+* Existem **duas direções** de sincronização: DER → BD (Forward) e BD → DER (Reverse). Você precisa dominar ambas.
+* Ao executar scripts de alteração, respeite sempre a **ordem**: script principal primeiro, depois os scripts de alteração na sequência (2, 3, 4, ... N).
+
+---
+
+## 📍 Posição no Cronograma
+
+| Aula | Data | Conteúdo |
+|------|------|----------|
+| 01 | 04/02 | Apresentação, plano pedagógico, contexto (ARQ01) |
+| 02 | 09/02 | Introdução a BD — SGBD, arquitetura, papéis (ARQ02) |
+| 03 | 11/02, 23/02, 25/02 | Modelagem Conceitual — MER (ARQ03) |
+| 04 | 04/03 | DER + primeira prática no Workbench (ARQ04) |
+| 05 | 09/03 | Normalização — 1ª a 4ª Forma Normal (ARQ05) |
+| 06 | 11/03 | Laboratório: DER, Forward Engineering e DDL manual (ARQ06) |
+| **07** | **16/03** | **← VOCÊ ESTÁ AQUI** — Sincronização DER ↔ BD + Tipos de Dados (ARQ07) |
+
+---
+
+### Estrutura de pastas da Aula `ARQ07`:
+
+```
+ARQ07/
+├── Bloco1/
+│   ├── README.md (Forward Engineering Sync)
+│   └── Exercicio04/
+│       └── README.md (Alterar DER → Sincronizar com BD)
+├── Bloco2/
+│   ├── README.md (Reverse Engineering + Referência)
+│   ├── Exercicio05/
+│   │   └── README.md (Alterar BD → Sincronizar com DER)
+│   └── referencia/
+│       ├── propriedades-colunas.md (PK, NN, UQ, UN, ZF, AI, G, B)
+│       └── tipos-de-dados.md (Numéricos, Data/Hora, Texto)
+└── README.md (Este arquivo)
 ```
 
-Cada aula é organizada internamente em **2 blocos didáticos**, combinando **conceito, observação, prática guiada e consolidação**.
-
 ---
 
-## 📚 Ementa Detalhada
-
----
-
-## 📅 📌 CALENDÁRIO – AULAS PRÁTICAS
-
----
-
-### 🔹 MARÇO – MODELAGEM E WORKBENCH
-
-| Tema                                                                   | Local       |
-| ---------------------------------------------------------------------- | ----------- |
-| Modelo Lógico – DER + exercícios + introdução ao Modelo Físico (ARQ04) | Sala        |
-| Construção do DER e Modelo Físico no Workbench (ARQ06)                 | Laboratório |
-| Alterando DER e sincronizando com BD (ARQ07)                           | Laboratório |
-| Construção do DER – exercício com 9 tabelas (ARQ08)                    | Laboratório |
-
----
-
-### 🔹 MARÇO / ABRIL – SQL NA PRÁTICA
-
-| Tema                                                                      | Local       |
-| ------------------------------------------------------------------------- | ----------- |
-| SQL prática + iniciar COMANDOS-BD-01                                      | Laboratório |
-| Finalizar COMANDOS-BD-01 + iniciar objetos armazenados (ARQ11/12 + BD-02) | Laboratório |
-| Stored Procedure, Trigger, Function e View – prática                      | Laboratório |
-
----
-
-### 🔹 ABRIL / MAIO – CONTROLE TRANSACIONAL (SEU BLOCO FORTE 🔥)
-
-| Tema                                                  | Local       |
-| ----------------------------------------------------- | ----------- |
-| Controle Transacional – prática (ARQ13/15 + BD-03/04) | Laboratório |
-| Controle Transacional – prática                       | Laboratório |
-| Controle Transacional – prática                       | Laboratório |
-| Controle Transacional – prática                       | Laboratório |
-
----
-
-### 📊 Resumo da Carga Prática
-
-* ✅ 4 aulas – Modelagem prática
-* ✅ 3 aulas – SQL prática
-* ✅ 4 aulas – Transações práticas
-
-📌 **Total: 11 aulas práticas**
-
----
-
-### 🎯 Perfil das Aulas:
-
-* Construção real de DER
-* Workbench
-* SQL executando código
-* Stored Procedure
-* Trigger
-* Function
-* Controle de transações
-* Lock e concorrência
-* Sistema financeiro prático
-
-<!--
-### Aula 01 — Fundamentos e Ambientação: Introdução a Banco de Dados
-- Visão geral da disciplina (ementa)
-- O que é BD, SGBD e Sistema de BD Importância dos dados nas organizações
-- Dados, informação, conhecimento e sabedoria (DIKW)
-- Tipos de dados: qualitativos, quantitativos, estruturados e não estruturados
-- Banco de Dados × SGBD × Sistema de BD
-- Apresentação do MySQL e MySQL Workbench
-- Visualização de tabelas reais (sem SQL)
-- Importância dos dados nas organizações
-
-
----
-
-### Aula 02 — Arquitetura de BD e Papéis
-- Arquitetura de sistemas de BD
-- Papéis: DBA, analista, programador, usuário
-- Mini-mundo
-
-**Prática**
-- Navegação no Workbench
-- Criação de schema vazio
-
----
-
-### Aula 03 — Modelagem Conceitual: MER
-- Entidade, atributo e relacionamento
-- Cardinalidades
-
-**Prática**
-- Estudo de caso simples
-- Introdução ao DER no Workbench
-
----
-
-### Aula 04 — DER na Prática
-- Entidades fracas
-- Relacionamentos N:N
-- Atributos compostos
-
-**Prática**
-- DER completo (Família ou Imobiliária)
-
----
-
-### Aula 05 — Revisão de MER / DER
-- Revisão geral
-- Avaliação conceitual
-
----
-
-### Aula 06 — Modelo Relacional
-- Tabela, tupla, atributo
-- Chaves primária e estrangeira
-
----
-
-### Aula 07 — Normalização
-- 1FN, 2FN, 3FN
-- Dependência funcional
-
----
-
-### Aula 08 — SQL DDL
-- CREATE, DROP, ALTER
-- Constraints
-
----
-
-### Aula 09 — SQL DML
-- INSERT, UPDATE, DELETE
-
----
-
-### Aula 10 — SELECT
-- SELECT, WHERE, ORDER BY
-
----
-
-### Aulas 11–13 — SQL Avançado e Transações
-- JOIN, agregações, GROUP BY
-- Stored Procedures e Triggers
-- ACID e concorrência
-
----
-
-### Aula 14 — Apoio à Decisão
-- SAD, DW, Data Mart
-
----
-
-### Aula 15 — Revisão Geral
-- DER → Relacional → SQL
-
----
-
-### Aula 16 — Avaliação Final / Encerramento
-- Avaliação prática ou projeto em grupo
--->
-
----
-
-> **Banco de Dados não começa em SELECT. Começa em entender o dado.**
+> 💭 *"Alterar o banco sem atualizar o DER é como reformar a casa sem atualizar a planta — na próxima obra, ninguém sabe o que tem por trás da parede."*
