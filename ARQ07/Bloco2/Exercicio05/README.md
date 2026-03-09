@@ -39,7 +39,7 @@ Após preencher os dados da nova coluna, o botão **"Apply"** é clicado para pr
 O MySQL Workbench exibe uma tela de revisão com o script SQL que será executado no banco:
 
 ```sql
-ALTER TABLE `novoesquema`.`tabmae`
+ALTER TABLE `mydb`.`TabMae`
 ADD COLUMN `MaisUmaColuna` INT ZEROFILL NULL AFTER `NovaColuna`;
 ```
 
@@ -66,10 +66,10 @@ Abra uma nova aba no Query Editor usando `Ctrl+T` ou clicando no ícone de nova 
 Digite e execute o comando SQL para adicionar a coluna desejada:
 
 ```sql
-USE `novoesquema`;
+USE `mydb`;
 
-ALTER TABLE `tabmae`
-ADD COLUMN `MaisUmaColuna` INT ZEROFILL NULL AFTER `NovaColuna`;
+ALTER TABLE `TabMae`
+ADD `TelefoneMae` VARCHAR(20);
 ```
 
 Selecione o comando e clique no ícone de raio (⚡) ou pressione `Ctrl+Shift+Enter` para executar.
