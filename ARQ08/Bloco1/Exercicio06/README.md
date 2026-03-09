@@ -17,15 +17,15 @@ Criar um DER completo no Workbench com 8 tabelas representando um sistema de **i
 O sistema possui as seguintes tabelas e relacionamentos:
 
 ```
-TipoImovel ────────┐
+TipoImovel ─────────┐
                     │
-Cidade ─────────┐  │
-                │  │
-Praia ──────┐   │  │
-            │   │  │
-Proprietario┐  │  │  │
-            │  │  │  │
-            ▼  ▼  ▼  ▼
+Cidade ─────────┐   │
+                │   │
+Praia ──────┐   │   │
+            │   │   │
+Proprietario┐   │   │
+            │   │   │
+            ▼   ▼   ▼ 
            Imovel ──────────────┐
                                 │
            Inquilino ──────┐    │
