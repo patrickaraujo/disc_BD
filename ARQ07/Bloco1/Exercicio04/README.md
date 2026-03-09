@@ -164,7 +164,15 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 ---
 
-### Parte E — Verificar a sincronização
+### Parte E — Abrindo e executando o _script_
+
+1. Abra o arquivo `NovoEsquema-Seq02.sql` (Menu Arquivo > Abrir Modelo);
+2. Selecione todo o texto (Ctrl + A);
+3. Clique no ícone de raio (⚡) para executar o _script_.
+
+---
+
+### Parte F — Verificar a sincronização
 
 1. Na aba da conexão local (`Local instance MySQL80`), acesse o painel **Schemas**
 2. Pressione **refresh** (🔄) se necessário
