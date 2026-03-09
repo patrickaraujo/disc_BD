@@ -154,13 +154,13 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 ```
-3. Clique em **"Save to File..."** para salvar o script
-4. Salve com o nome **`NovoEsquema-Seq02.sql`** na mesma pasta dos outros arquivos
+2. Clique em **"Save to File..."** para salvar o script
+3. Salve com o nome **`NovoEsquema-Seq02.sql`** na mesma pasta dos outros arquivos
 
    > ⚠️ **Cuidado com o nome!** Não sobrescreva o script original (`NovoEsquema.sql`). Use nomes sequenciais (`-Seq02`, `-Seq03`, etc.) para manter o histórico de alterações.
 
-5. Clique em **Execute >** para aplicar as alterações no banco
-6. Aguarde: **"Synchronize Finished Successfully"**
+4. Clique em **Execute >** para aplicar as alterações no banco
+5. Aguarde: **"Synchronize Finished Successfully"**
 
 ---
 
