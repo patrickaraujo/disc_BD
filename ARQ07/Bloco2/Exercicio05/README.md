@@ -41,10 +41,10 @@ Banco Físico (MySQL)             DER (modelo .mwb)
 3. Execute um comando `ALTER TABLE` para modificar a estrutura — por exemplo:
 
 ```sql
-USE mydb;
+USE `mydb`;
 
-ALTER TABLE TabMae
-ADD TelefoneMae VARCHAR(20);
+ALTER TABLE `TabMae`
+ADD `TelefoneMae` VARCHAR(20);
 ```
 
 4. Confirme a alteração com `DESCRIBE`:
