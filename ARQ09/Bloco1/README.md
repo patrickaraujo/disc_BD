@@ -150,6 +150,10 @@ ON p.id = v.id_produto;
 
 #### 4️⃣ União (∪) — Juntar resultados
 
+> Representação visual com diagrama de Venn da União.
+
+![Exemplo de União com Diagrama de Venn](./img/uniao.png)
+
 Imagine duas tabelas:
 
 **PROMOÇÃO**
