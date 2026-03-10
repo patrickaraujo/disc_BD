@@ -226,6 +226,11 @@ SELECT nome FROM mais_vendidos;
 
 #### 6️⃣ Diferença (−) — Elementos exclusivos
 
+> Representação visual com diagrama de Venn da Diferença.
+> Fonte: [Pikist](https://share.google/a3CiIotUCJ0bCBNdj).
+
+![Exemplo de União com Diagrama de Venn](./img/diferenca.png)
+
 **Álgebra Relacional:**
 
 ```
