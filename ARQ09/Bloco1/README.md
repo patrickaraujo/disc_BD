@@ -229,7 +229,7 @@ SELECT nome FROM mais_vendidos;
 > Representação visual com diagrama de Venn da Diferença.
 > Fonte: [Pikist](https://share.google/a3CiIotUCJ0bCBNdj).
 
-![Exemplo de União com Diagrama de Venn](./img/difference.png)
+![Exemplo de Diferença com Diagrama de Venn](./img/difference.png)
 
 **Álgebra Relacional:**
 
@@ -300,6 +300,10 @@ CROSS JOIN cores;
 
 A **SQL (Structured Query Language)** é a linguagem padrão para bancos de dados relacionais. Ela pode ser utilizada de duas formas: embutida em linguagens de programação (Java, Python, etc.) ou diretamente no SGBD via Query Editor.
 
+Nos SGBDRs, a SQL pode ter enfoques diferentes. Com a utilização de comandos SQL, os **programadores** podem construir no SGBD consultas complexas sem a necessidade de criação de um programa e receber de imediato as respostas que necessitam para dar continuidade ao desenvolvimento das aplicações. O **DBA**, responsável pela administração do BD, irá utilizar uma parte da SQL mais relacionada com a definição da estrutura dos dados, com o gerenciamento do acesso aos dados por parte dos usuários e com o monitoramento da utilização dos dados no dia a dia da organização.
+
+### Composição da SQL
+
 A SQL é organizada em subconjuntos conforme a finalidade dos comandos:
 
 ```
@@ -317,13 +321,110 @@ A SQL é organizada em subconjuntos conforme a finalidade dos comandos:
 └────────────┴────────────┴────────────┴───────────────────────┘
 ```
 
-Diferentes profissionais utilizam diferentes partes da SQL:
-- O **programador** usa principalmente DDL e DML para criar estruturas e manipular dados.
-- O **DBA** (Administrador de BD) usa DCL para gerenciar acesso, e DTL para controlar transações.
+- **DDL (Data Definition Language):** definição da estrutura e organização dos dados armazenados e seus relacionamentos.
+- **DML (Data Manipulation Language):** rotinas de inclusão, remoção, seleção ou atualização dos dados armazenados no BD.
+- **DCL (Data Control Language):** linguagem de controle de dados, usada pelo DBA para controlar o acesso aos dados pelos usuários. Possui comandos de atribuição e remoção de privilégios.
+- **DTL/TCL (Transaction Control Language):** coordena o compartilhamento dos dados por usuários concorrentes e auxilia na integridade dos dados, protegendo contra corrupções, inconsistências e falhas.
+
+### Vantagens da SQL
+
+- **Independência de fabricantes:** padronização dos comandos (ANSI).
+- **Portabilidade entre computadores:** de computadores pessoais a grande porte.
+- **Redução de custos com treinamentos.**
+- **Inglês estruturado de alto nível:** conjunto simples de sentenças em inglês.
+- **Consulta interativa:** acesso rápido e respostas a consultas complexas.
+- **Múltiplas visões dos dados:** criação de diferentes visões dos dados armazenados pelo usuário.
+- **Definição dinâmica dos dados:** modificação da estrutura de dados com flexibilidade.
 
 ---
 
-## 💡 Revisão DDL — Tratamento de Constraints
+## 💡 Revisão DDL — Data Definition Language
+
+### Comandos de Banco de Dados
+
+| Comando | Função |
+|---------|--------|
+| `CREATE DATABASE nome_do_bd` | Cria um banco de dados com características específicas (nome, arquivos de log, arquivo das tabelas) |
+| `ALTER DATABASE nome_do_bd` | Altera as características do banco de dados (ex.: charset, collation) |
+| `DROP DATABASE nome_do_bd` | Deleta o banco de dados e todas as tabelas existentes dentro dele |
+
+**Exemplo — ALTER DATABASE:**
+
+```sql
+ALTER DATABASE 'base_de_dados' DEFAULT CHARACTER SET utf8
+  COLLATE utf8_general_ci;
+```
+
+### Comandos de Tabela
+
+| Comando | Função |
+|---------|--------|
+| `CREATE TABLE` | Cria uma tabela física no banco de dados |
+| `ALTER TABLE` | Altera as características físicas de uma tabela existente |
+| `DROP TABLE` | Apaga uma tabela física |
+
+**Sintaxe — CREATE TABLE:**
+
+```sql
+CREATE TABLE <nome_tabela>
+  (<descrição das colunas>)
+  (<descrição das chaves>);
+```
+
+**Exemplo — CREATE TABLE:**
+
+```sql
+CREATE TABLE cliente
+(
+    codigo       INT AUTO_INCREMENT,         -- tipo inteiro e incremento automático
+    Nome         VARCHAR(20) NOT NULL,        -- tipo char variável e obrigatório
+    Endereco     VARCHAR(20) NOT NULL,        -- tipo char variável e obrigatório
+    Cidade       VARCHAR(15) NOT NULL,        -- tipo char variável e obrigatório
+    CEP          CHAR(8) NOT NULL,            -- tipo char fixo de 8 posições e obrigatório
+    UF           CHAR(2) NOT NULL,            -- tipo char fixo de 2 posições e obrigatório
+    CNPJ         CHAR(14) NOT NULL,           -- tipo char fixo de 14 posições e obrigatório
+    IE           CHAR(20),                    -- tipo char fixo de 20 posições
+    dataRegistro TIMESTAMP(14),              -- tipo de data exibindo 14 caracteres
+
+    CONSTRAINT pk1 PRIMARY KEY (codigo)      -- constraint de chave primária de nome pk1
+)
+ENGINE = INNODB;  -- indica que a criação da tabela deve usar a estrutura InnoDB
+```
+
+### Constraints (Restrições)
+
+As constraints têm por objetivo criar regras para a inserção de valores em uma tabela. Cada constraint é um objeto da base de dados que pode ser criado, modificado ou eliminado independentemente da tabela à qual está associada, sendo referenciado pelo nome com que foi definido.
+
+**Tipos de Constraints:**
+
+| Constraint | Função |
+|------------|--------|
+| `PRIMARY KEY` | Define o campo como chave primária da tabela |
+| `FOREIGN KEY` | Define o campo como chave estrangeira de outra tabela |
+| `UNIQUE` | Não permite a repetição de valores em um campo da tabela |
+| `DEFAULT` | Permite colocar um valor padrão na ausência de valores em um campo |
+| `NOT NULL` | Preenchimento obrigatório de valores em um campo da tabela |
+
+### Exemplos de ALTER TABLE
+
+```sql
+-- Adiciona um campo de nome "idade" do tipo INTEGER na tabela "pessoa"
+ALTER TABLE pessoa ADD idade INTEGER;
+
+-- Adiciona um campo de nome "campo1" do tipo CHAR(5) na tabela "cliente"
+ALTER TABLE cliente ADD campo1 CHAR(5);
+
+-- Altera o tipo de dado do campo "nome" para VARCHAR(40) na tabela "pessoa"
+ALTER TABLE pessoa MODIFY nome VARCHAR(40);
+
+-- Altera o nome do campo "nome" para "nome2" na tabela "pessoa"
+ALTER TABLE pessoa CHANGE nome nome2 VARCHAR(50);
+
+-- Apaga a constraint de nome "fk_pessoa_pedido" da tabela "pessoa"
+ALTER TABLE pessoa DROP FOREIGN KEY fk_pessoa_pedido;
+```
+
+### Tratamento de Constraints ao Apagar Tabelas
 
 Ao apagar uma tabela que fornece sua PK como FK para outra tabela, o MySQL retorna um erro de integridade referencial. Para resolver, é necessário **apagar a constraint** antes de apagar a tabela:
 
@@ -340,7 +441,12 @@ DROP TABLE nome_tabela;   -- ✅ Agora funciona
 
 ## 💡 DCL — Data Control Language
 
-Os comandos DCL gerenciam **quem** pode acessar o banco e **o que** cada usuário pode fazer. Os principais comandos são:
+Os comandos DCL gerenciam **quem** pode acessar o banco e **o que** cada usuário pode fazer.
+
+- **GRANT →** Utilizado para conceder permissões (privilégios) de acesso dos usuários a algum objeto do banco de dados.
+- **REVOKE →** Utilizado para remover permissões (privilégios) de acesso dos usuários a algum objeto do banco de dados.
+
+### Resumo dos Comandos
 
 | Comando | Função |
 |---------|--------|
@@ -350,6 +456,49 @@ Os comandos DCL gerenciam **quem** pode acessar o banco e **o que** cada usuári
 | `SHOW GRANTS` | Exibe as permissões de um usuário |
 | `FLUSH PRIVILEGES` | Efetiva as mudanças de permissão |
 | `DROP USER` | Remove um usuário do SGBD |
+
+### Exemplos Práticos — DCL no MySQL
+
+```sql
+-- consultando os usuários existentes no MySQL
+SELECT * FROM mysql.user;
+
+-- criando um novo usuário
+CREATE USER 'rzampar'@'localhost' IDENTIFIED BY '12345@';
+
+-- concedendo direito total de acesso ao novo usuário
+GRANT ALL PRIVILEGES ON *.* TO 'rzampar'@'localhost';
+
+-- concedendo direito de criação e leitura ao novo usuário
+GRANT CREATE, SELECT ON *.* TO 'rzampar'@'localhost';
+
+-- revogando os direitos concedidos
+REVOKE ALL PRIVILEGES ON *.* FROM 'rzampar'@'localhost';
+
+-- consultando os direitos concedidos
+SHOW GRANTS FOR 'rzampar'@'localhost';
+
+-- efetivando as mudanças no banco de dados
+FLUSH PRIVILEGES;
+
+-- apagando um usuário
+DROP USER 'rzampar'@'localhost';
+```
+
+---
+
+## 💡 Introdução à DML — Data Manipulation Language
+
+Os comandos DML manipulam os **dados** armazenados nas tabelas:
+
+| Comando | Função |
+|---------|--------|
+| `INSERT` | Insere um registro em uma tabela específica |
+| `UPDATE` | Altera um ou um grupo de registros de uma tabela específica |
+| `SELECT` | Seleciona um ou um grupo de registros em uma ou mais tabelas específicas |
+| `DELETE` | Apaga um ou um grupo de registros de uma tabela específica |
+
+> 💡 A prática dos comandos DML será realizada no **Bloco 2**.
 
 ---
 
