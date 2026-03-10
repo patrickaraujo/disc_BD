@@ -39,6 +39,246 @@ As operações são divididas em dois grupos:
 - **Diferença (−):** Retorna as tuplas da primeira relação que não estão na segunda. Equivale ao `EXCEPT`.
 - **Produto Cartesiano (×):** Combina cada tupla de uma relação com todas as tuplas de outra. Equivale ao `CROSS JOIN`.
 
+### Exemplos Práticos — Da Álgebra Relacional ao SQL
+
+Para ilustrar cada operação, considere as seguintes tabelas de exemplo:
+
+**PRODUTOS**
+
+| ID | NOME       | PREÇO | ESTOQUE |
+| -- | ---------- | ----- | ------- |
+| 1  | Notebook   | 2500  | 10      |
+| 2  | Smartphone | 1200  | 20      |
+| 3  | Tablet     | 800   | 15      |
+| 4  | Monitor    | 500   | 30      |
+| 5  | Impressora | 300   | 25      |
+
+**VENDAS**
+
+| ID | ID_PRODUTO | DATA  | QUANTIDADE | VALOR_TOTAL |
+| -- | ---------- | ----- | ---------- | ----------- |
+| 1  | 1          | 09/03 | 2          | 5000        |
+| 2  | 2          | 10/03 | 3          | 3600        |
+| 3  | 4          | 10/03 | 1          | 500         |
+| 4  | 3          | 11/03 | 2          | 1600        |
+
+---
+
+#### 1️⃣ Seleção (σ) — Filtrar linhas
+
+**Álgebra Relacional:**
+
+```
+σ PREÇO > 1000 (PRODUTOS)
+```
+
+**Ideia:** Produtos que custam mais de 1000.
+
+**Resultado:**
+
+| ID | NOME       | PREÇO | ESTOQUE |
+| -- | ---------- | ----- | ------- |
+| 1  | Notebook   | 2500  | 10      |
+| 2  | Smartphone | 1200  | 20      |
+
+**SQL equivalente:**
+
+```sql
+SELECT * FROM produtos
+WHERE preco > 1000;
+```
+
+---
+
+#### 2️⃣ Projeção (π) — Selecionar colunas
+
+**Álgebra Relacional:**
+
+```
+π NOME, PREÇO (PRODUTOS)
+```
+
+**Ideia:** Mostrar apenas nome e preço.
+
+**Resultado:**
+
+| NOME       | PREÇO |
+| ---------- | ----- |
+| Notebook   | 2500  |
+| Smartphone | 1200  |
+| Tablet     | 800   |
+| Monitor    | 500   |
+| Impressora | 300   |
+
+**SQL equivalente:**
+
+```sql
+SELECT nome, preco FROM produtos;
+```
+
+---
+
+#### 3️⃣ Junção (⋈) — Combinar tabelas
+
+**Álgebra Relacional:**
+
+```
+PRODUTOS ⋈ PRODUTOS.ID = VENDAS.ID_PRODUTO VENDAS
+```
+
+**Ideia:** Mostrar qual produto foi vendido.
+
+**Resultado:**
+
+| NOME       | DATA  | QUANTIDADE |
+| ---------- | ----- | ---------- |
+| Notebook   | 09/03 | 2          |
+| Smartphone | 10/03 | 3          |
+| Monitor    | 10/03 | 1          |
+| Tablet     | 11/03 | 2          |
+
+**SQL equivalente:**
+
+```sql
+SELECT p.nome, v.data, v.quantidade
+FROM produtos p
+JOIN vendas v
+ON p.id = v.id_produto;
+```
+
+---
+
+#### 4️⃣ União (∪) — Juntar resultados
+
+Imagine duas tabelas:
+
+**PROMOÇÃO**
+
+| NOME     |
+| -------- |
+| Notebook |
+| Tablet   |
+
+**MAIS_VENDIDOS**
+
+| NOME    |
+| ------- |
+| Tablet  |
+| Monitor |
+
+**Álgebra Relacional:**
+
+```
+PROMOÇÃO ∪ MAIS_VENDIDOS
+```
+
+**Resultado:**
+
+| NOME     |
+| -------- |
+| Notebook |
+| Tablet   |
+| Monitor  |
+
+**SQL equivalente:**
+
+```sql
+SELECT nome FROM promocao
+UNION
+SELECT nome FROM mais_vendidos;
+```
+
+---
+
+#### 5️⃣ Interseção (∩) — Elementos em comum
+
+**Álgebra Relacional:**
+
+```
+PROMOÇÃO ∩ MAIS_VENDIDOS
+```
+
+**Resultado:**
+
+| NOME   |
+| ------ |
+| Tablet |
+
+**SQL equivalente:**
+
+```sql
+SELECT nome FROM promocao
+INTERSECT
+SELECT nome FROM mais_vendidos;
+```
+
+---
+
+#### 6️⃣ Diferença (−) — Elementos exclusivos
+
+**Álgebra Relacional:**
+
+```
+PROMOÇÃO − MAIS_VENDIDOS
+```
+
+**Resultado:**
+
+| NOME     |
+| -------- |
+| Notebook |
+
+**SQL equivalente:**
+
+```sql
+SELECT nome FROM promocao
+EXCEPT
+SELECT nome FROM mais_vendidos;
+```
+
+---
+
+#### 7️⃣ Produto Cartesiano (×) — Todas as combinações
+
+**Tabelas:**
+
+**CAMISETAS**
+
+| MARCA  |
+| ------ |
+| Nike   |
+| Adidas |
+
+**CORES**
+
+| COR   |
+| ----- |
+| Azul  |
+| Preto |
+
+**Álgebra Relacional:**
+
+```
+CAMISETAS × CORES
+```
+
+**Resultado:**
+
+| MARCA  | COR   |
+| ------ | ----- |
+| Nike   | Azul  |
+| Nike   | Preto |
+| Adidas | Azul  |
+| Adidas | Preto |
+
+**SQL equivalente:**
+
+```sql
+SELECT *
+FROM camisetas
+CROSS JOIN cores;
+```
+
 ---
 
 ## 💡 Linguagem SQL — Organização
