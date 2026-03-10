@@ -27,23 +27,26 @@ SHOW SCHEMAS;
 
 **2.** Selecionar o banco da imobiliária e listar suas tabelas:
 ```sql
-USE imobiliaria;
-SHOW TABLES;
+USE `imobiliaria`;
+show tables;
 ```
 
 **3.** Verificar os direitos de acesso do usuário conectado:
 ```sql
-SHOW GRANTS;
+USE `imobiliaria`;
+show grants;
 ```
 
 **4.** Ver a estrutura detalhada da tabela `Cidade`:
 ```sql
-DESCRIBE Cidade;
+USE `imobiliaria`;
+describe Cidade;
 ```
 
 **5.** Filtrar uma coluna específica:
 ```sql
-SHOW COLUMNS FROM Cidade LIKE 'UF';
+USE `imobiliaria`;
+show columns from Cidade like 'uf';
 ```
 
 ✅ **Checkpoint:** Você consegue ver a estrutura do banco e confirmar que o campo `UF` é do tipo ENUM.
@@ -54,6 +57,8 @@ SHOW COLUMNS FROM Cidade LIKE 'UF';
 
 **6.** Inserir cidades com UFs válidas:
 ```sql
+USE `imobiliaria`;
+
 INSERT INTO Cidade (CodCidade, Cidade, UF) VALUES
 (1, 'Belo Horizonte', 'MG'),
 (2, 'Manaus', 'AM'),
@@ -67,6 +72,8 @@ INSERT INTO Cidade (CodCidade, Cidade, UF) VALUES
 
 **7.** Consultar todos os registros:
 ```sql
+USE `imobiliaria`;
+
 SELECT * FROM Cidade;
 ```
 
@@ -77,12 +84,21 @@ SELECT * FROM Cidade ORDER BY UF;
 
 **9.** Consultar ordenando pela PK:
 ```sql
-SELECT * FROM Cidade ORDER BY CodCidade;
+USE `imobiliaria`;
+
+SELECT * FROM Cidade ORDER BY UF;
 ```
 
 **10.** Tentar inserir uma UF **inválida**:
 ```sql
-INSERT INTO Cidade (CodCidade, Cidade, UF) VALUES (7, 'Campinas', 'XX');
+USE `imobiliaria`;
+
+SELECT * FROM Cidade;
+
+#	DELETE FROM Cidade WHERE CodCidade = 7;
+
+INSERT INTO Cidade (CodCidade, Cidade, UF) VALUES (7, 'Campinas', 'SP');
+SELECT * FROM Cidade;
 ```
 
 > ⚠️ **Resultado esperado:** O MySQL rejeita o INSERT porque `'XX'` não faz parte da lista ENUM. A mensagem de erro indica que o valor é inválido para a coluna `UF`. Esse é exatamente o propósito do ENUM — restringir os valores aceitos.
