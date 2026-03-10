@@ -151,7 +151,7 @@ ON p.id = v.id_produto;
 #### 4️⃣ União (∪) — Juntar resultados
 
 > Representação visual com diagrama de Venn da União.
-> Fonte: [Wikimedia]([https://duckduckgo.com](https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Venn_A_intersect_B.svg/1280px-Venn_A_intersect_B.svg.png)).
+> Fonte: [Wikimedia](https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Venn_A_intersect_B.svg/1280px-Venn_A_intersect_B.svg.png).
 
 ![Exemplo de União com Diagrama de Venn](./img/Venn_A_intersect_B.png)
 
@@ -196,6 +196,11 @@ SELECT nome FROM mais_vendidos;
 ---
 
 #### 5️⃣ Interseção (∩) — Elementos em comum
+
+> Representação visual com diagrama de Venn da Intersecção.
+> Fonte: [Wikimedia](https://en.wikipedia.org/wiki/File:Venn_A_intersect_B_alt.svg).
+
+![Exemplo de Intersecção com Diagrama de Venn](./img/Venn_A_intersect_B_alt.png)
 
 **Álgebra Relacional:**
 
