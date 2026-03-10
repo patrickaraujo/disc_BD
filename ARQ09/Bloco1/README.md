@@ -152,7 +152,7 @@ ON p.id = v.id_produto;
 
 > Representação visual com diagrama de Venn da União.
 
-![Exemplo de União com Diagrama de Venn](./img/uniao.png)
+![Exemplo de União com Diagrama de Venn](./img/Venn_A_intersect_B.png)
 
 Imagine duas tabelas:
 
