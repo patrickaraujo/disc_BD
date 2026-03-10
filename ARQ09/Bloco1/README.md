@@ -229,7 +229,7 @@ SELECT nome FROM mais_vendidos;
 > Representação visual com diagrama de Venn da Diferença.
 > Fonte: [Pikist](https://share.google/a3CiIotUCJ0bCBNdj).
 
-![Exemplo de União com Diagrama de Venn](./img/diferenca.png)
+![Exemplo de União com Diagrama de Venn](./img/difference.png)
 
 **Álgebra Relacional:**
 
