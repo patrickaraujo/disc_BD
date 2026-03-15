@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`TabFilha` (
   `CodTabFilha` INT NOT NULL,
   `TabFilhacol` VARCHAR(45) NOT NULL,
   `TabMae_CodTabMae` INT NOT NULL,
-  PRIMARY KEY (`CodTabFilha`),
+  PRIMARY KEY (`CodTabFilha`, `TabMae_CodTabMae`),
   INDEX `fk_TabFilha_TabMae_idx` (`TabMae_CodTabMae` ASC) VISIBLE,
   CONSTRAINT `fk_TabFilha_TabMae`
     FOREIGN KEY (`TabMae_CodTabMae`)
