@@ -184,4 +184,50 @@ Cada aula é organizada internamente em **2 blocos didáticos**, combinando **co
 
 ---
 
+## 🎥 Recursos Complementares (Playlists)
+
+Alguns conteúdos da disciplina foram **complementados por playlists do YouTube** que ajudam na compreensão prática das ferramentas e conceitos.
+
+### 🔹 MySQL Workbench
+
+📺 Playlist:
+[https://www.youtube.com/playlist?list=PLfvOpw8k80WoSXjfGFci23SPob_PdvpHx](https://www.youtube.com/playlist?list=PLfvOpw8k80WoSXjfGFci23SPob_PdvpHx)
+
+**Descrição**
+
+A playlist **MySQL Workbench** tem como objetivo ensinar o aluno a **criar modelos relacionais utilizando a ferramenta MySQL Workbench**.
+
+O **MySQL Workbench** é uma ferramenta visual de design de banco de dados que integra:
+
+* desenvolvimento
+* administração
+* design
+* criação e manutenção de SQL
+
+tudo em um único **ambiente integrado para o sistema de banco de dados MySQL**.
+
+Esse material apoia principalmente as aulas de:
+
+* Modelagem conceitual (DER)
+* Modelagem lógica
+* Construção do modelo físico
+* Sincronização do modelo com o banco de dados
+
+---
+
+### 🔹 SQL e Banco de Dados
+
+📺 Playlist:
+[https://www.youtube.com/playlist?list=PLTW8p5fuSdks4RXHI3ljc4lU8VQUgBAYX](https://www.youtube.com/playlist?list=PLTW8p5fuSdks4RXHI3ljc4lU8VQUgBAYX)
+
+Esta playlist complementa os conteúdos de:
+
+* SQL na prática
+* manipulação de dados
+* consultas
+* objetos de banco de dados
+* práticas de laboratório
+
+---
+
 > **Banco de Dados não começa em SELECT. Começa em entender o dado.**
