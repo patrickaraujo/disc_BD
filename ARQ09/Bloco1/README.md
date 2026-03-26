@@ -18,7 +18,9 @@
 
 ## 💡 Álgebra Relacional
 
-A **Álgebra Relacional (AR)** é um conjunto de operações matemáticas usadas para manipular relações (tabelas) em um banco de dados relacional. Toda operação da AR recebe uma ou mais relações como entrada e produz uma nova relação como resultado — ou seja, o resultado de uma consulta é sempre apresentado na forma de uma tabela.
+No arquivo '_.pdf_'. em anexo.
+
+<!--A **Álgebra Relacional (AR)** é um conjunto de operações matemáticas usadas para manipular relações (tabelas) em um banco de dados relacional. Toda operação da AR recebe uma ou mais relações como entrada e produz uma nova relação como resultado — ou seja, o resultado de uma consulta é sempre apresentado na forma de uma tabela.
 
 Na prática, os programadores não utilizam a AR diretamente. Ela serve como **fundamentação teórica** para a linguagem SQL. Compreender a AR ajuda a entender a lógica por trás dos comandos SQL, especialmente o `SELECT`.
 
@@ -293,7 +295,7 @@ SELECT *
 FROM camisetas
 CROSS JOIN cores;
 ```
-
+-->
 ---
 
 ## 💡 Linguagem SQL — Organização
