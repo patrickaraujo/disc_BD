@@ -1,4 +1,4 @@
-# Aula de Banco de Dados - Comandos DDL e DML
+# Aula de Banco de Dados - Comandos DDL, DML e Controle de Transações
 
 ## Problematização Inicial
 
@@ -13,7 +13,8 @@ Estas situações do dia a dia mostram como é essencial entender o comportament
 ---
 
 ## Objetivo
-Aprender a criar um banco de dados, tabelas, e entender a diferença entre os comandos `DELETE`, `TRUNCATE`, `COMMIT` e `ROLLBACK` com o autocommit desativado.
+
+Aprender a criar um banco de dados e tabelas, compreender a diferença entre os comandos `DELETE` e `TRUNCATE`, e dominar o controle transacional com `COMMIT` e `ROLLBACK`, entendendo o conceito de **commit implícito** em comandos DDL.
 
 ---
 
@@ -46,137 +47,159 @@ CREATE TABLE funcionarios (
 
 ```sql
 INSERT INTO funcionarios (id_funcionario, nome, sobrenome, salario_hora, data_contratacao) VALUES
-(1, 'Eugene', 'Siriguejo', 0.0, '1978-11-30'),
-(2, 'Lula', 'Molusco', 15.00, '1996-03-15'),
-(3, 'Bob', 'Esponja', 12.50, '1999-05-01'),
-(4, 'Patrick', 'Estrela', 12.50, '2000-02-03'),
-(5, 'Sandy', 'Bochechas', 17.25, '2006-05-05');
+(1, 'Eugene',  'Siriguejo', 0.00,  '1978-11-30'),
+(2, 'Lula',    'Molusco',   15.00, '1996-03-15'),
+(3, 'Bob',     'Esponja',   12.50, '1999-05-01'),
+(4, 'Patrick', 'Estrela',   12.50, '2000-02-03'),
+(5, 'Sandy',   'Bochechas', 17.25, '2006-05-05');
 ```
 
 ---
 
-## 3. Trabalhando com Transações
+## 3. Conceitos Fundamentais de Transação
 
-### Desabilitar o autocommit
+Antes de executarmos os exemplos, vamos entender três conceitos-chave:
+
+- **Transação:** um conjunto de operações tratadas como uma única unidade lógica. Ou tudo é confirmado, ou nada é.
+- **`COMMIT`:** confirma definitivamente as alterações no banco, tornando-as visíveis para todos os usuários.
+- **`ROLLBACK`:** desfaz todas as alterações feitas desde o início da transação (ou desde o último `COMMIT`).
+
+No MySQL, por padrão, cada comando é automaticamente confirmado (modo *autocommit*). Para demonstrar o controle transacional, precisamos desabilitar esse comportamento ou iniciar uma transação explícita com `START TRANSACTION`.
+
+> ⚠️ **Pré-requisito:** os exemplos a seguir funcionam apenas em tabelas com engine **InnoDB** (padrão do MySQL moderno), que suporta transações. Engines como MyISAM ignoram silenciosamente o `ROLLBACK`.
+
+---
+
+## 4. Bloco A — Demonstrando `DELETE` com `ROLLBACK` (Situação 1)
+
+Neste bloco, vamos simular exatamente o cenário do RH: uma exclusão acidental que precisa ser revertida.
+
+### Passo 1: Iniciar uma transação explícita
 ```sql
-SET autocommit = OFF;
+START TRANSACTION;
 ```
 
-### Verificando os dados inseridos
+### Passo 2: Desabilitar o modo seguro do Workbench (se necessário)
 ```sql
-SELECT * FROM funcionarios;
+SET SQL_SAFE_UPDATES = 0;
 ```
 
-### Confirmar a transação atual
-```sql
-COMMIT;
-```
+> 💡 O MySQL Workbench, por padrão, bloqueia comandos `DELETE` e `UPDATE` sem cláusula `WHERE` (erro 1175). Este comando desativa essa proteção **apenas para a sessão atual**.
 
-### Remover todos os registros com `DELETE`
+### Passo 3: Excluir todos os registros
 ```sql
 DELETE FROM funcionarios;
 ```
 
-> **Observação:** Se o `DELETE` não funcionar por restrições de chave estrangeira, utilize `TRUNCATE`:
-> ```sql
-> TRUNCATE TABLE funcionarios;
-> ```
-
-### Verificar que a tabela está vazia
+### Passo 4: Verificar que a tabela aparece vazia
 ```sql
 SELECT * FROM funcionarios;
 ```
+**Resultado esperado:** 0 linhas.
 
-### Desfazer a exclusão com `ROLLBACK` — **Resolvendo a Situação 1**
+### Passo 5: Desfazer a exclusão com `ROLLBACK`
 ```sql
 ROLLBACK;
 ```
 
-> 💡 **Reflexão:** Foi exatamente isso que salvou a situação do RH! Como as alterações ainda não tinham sido confirmadas com `COMMIT`, o `ROLLBACK` desfez a exclusão e restaurou todos os dados dos funcionários.
-
-### Confirmar que os dados foram restaurados
+### Passo 6: Confirmar que os dados foram restaurados
 ```sql
 SELECT * FROM funcionarios;
 ```
+**Resultado esperado:** os 5 funcionários originais.
+
+> 💡 **Reflexão — Situação 1 resolvida:** Foi exatamente isso que salvou a situação do RH! Como as alterações ainda não tinham sido confirmadas com `COMMIT`, o `ROLLBACK` desfez a exclusão e restaurou todos os dados.
 
 ---
 
-## 4. Diferença entre DELETE e TRUNCATE
+## 5. Bloco B — Demonstrando `TRUNCATE` (Situação 2)
 
-### Usando `DELETE` novamente
-```sql
-DELETE FROM funcionarios;
-```
+Agora vamos simular a limpeza definitiva da tabela de logs. Aqui entra um conceito fundamental que diferencia radicalmente o `TRUNCATE` do `DELETE`.
 
-### Usando `TRUNCATE` como alternativa — **Resolvendo a Situação 2**
+### ⚠️ Conceito crítico: Commit Implícito em DDL
+
+O comando `TRUNCATE` é classificado como **DDL (Data Definition Language)**, e não DML. Isso tem uma consequência importantíssima no MySQL:
+
+> **Comandos DDL provocam um `COMMIT` automático (implícito), tanto antes quanto depois da sua execução.**
+
+Isso significa que:
+
+1. Qualquer transação aberta é **automaticamente confirmada** no momento em que o `TRUNCATE` é executado;
+2. O `TRUNCATE` em si é executado **fora do controle transacional** — ele **não pode ser desfeito** por um `ROLLBACK` posterior;
+3. Não adianta envolver o `TRUNCATE` em `START TRANSACTION ... ROLLBACK` — o rollback não terá efeito sobre ele.
+
+Outros comandos que também provocam commit implícito: `CREATE`, `DROP`, `ALTER`, `RENAME`, `GRANT`, `REVOKE`.
+
+### Passo 1: Executar o `TRUNCATE`
 ```sql
 TRUNCATE TABLE funcionarios;
 ```
 
-> 💡 **Reflexão:** Para a limpeza dos logs antigos, o `TRUNCATE` foi a melhor escolha. Ele remove todos os registros de forma mais rápida e libera espaço em disco imediatamente, ideal para situações onde não há necessidade de recuperação dos dados.
-
-### Confirmar a exclusão permanente com `COMMIT`
+### Passo 2: Tentar reverter (apenas para fins didáticos)
 ```sql
-COMMIT;
-```
-
-### Verificar que a tabela permanece vazia
-```sql
+ROLLBACK;
 SELECT * FROM funcionarios;
 ```
+**Resultado esperado:** 0 linhas. O `ROLLBACK` **não restaura** os dados, porque o `TRUNCATE` já foi commitado implicitamente.
+
+> 💡 **Reflexão — Situação 2 resolvida:** Para a limpeza dos logs antigos, o `TRUNCATE` foi a escolha correta justamente por essa característica: ele é rápido, libera espaço imediatamente e dispensa controle transacional. Mas atenção — essa mesma característica o torna **perigoso** em cenários onde pode haver arrependimento.
 
 ---
 
-## Resumo dos Comandos
+## 6. Comparativo: DELETE vs TRUNCATE
 
-| Comando | Descrição |
-|---------|-----------|
-| `CREATE DATABASE` | Cria um novo banco de dados |
-| `USE` | Seleciona o banco de dados ativo |
-| `CREATE TABLE` | Cria uma nova tabela |
-| `INSERT INTO` | Insere registros na tabela |
-| `SELECT` | Consulta os registros |
-| `SET autocommit = OFF` | Desativa o autocommit automático |
-| `COMMIT` | Confirma as alterações permanentemente |
-| `ROLLBACK` | Desfaz as alterações não confirmadas |
-| `DELETE` | Remove registros (pode ser desfeito com ROLLBACK) |
-| `TRUNCATE` | Remove todos os registros rapidamente (não pode ser desfeito facilmente) |
+| Característica                   | DELETE                              | TRUNCATE                          |
+|----------------------------------|-------------------------------------|-----------------------------------|
+| Categoria                        | DML                                 | DDL                               |
+| Remove registros                 | Um a um (linha por linha)           | Desaloca a tabela inteira         |
+| Velocidade em grandes volumes    | Mais lento                          | Muito rápido                      |
+| Pode usar `WHERE`                | Sim                                 | Não                               |
+| Pode ser desfeito com `ROLLBACK` | Sim (dentro de uma transação)       | **Não** (commit implícito)        |
+| Reseta contadores AUTO_INCREMENT | Não                                 | Sim                               |
+| Registra cada exclusão no log    | Sim                                 | Não (minimamente logado)          |
+| Dispara *triggers* de `DELETE`   | Sim                                 | Não                               |
 
 ---
 
-## Comparativo: DELETE vs TRUNCATE
+## 7. Resumo dos Comandos
 
-| Característica | DELETE | TRUNCATE |
-|----------------|--------|----------|
-| Remove registros | Um a um | Todos de uma vez |
-| Velocidade | Mais lento em grandes volumes | Muito rápido |
-| Pode usar WHERE | Sim | Não |
-| Pode ser desfeito com ROLLBACK | Sim (dentro de uma transação) | Não (em alguns bancos) |
-| Reseta contadores de auto-incremento | Não | Sim |
-| Registra cada exclusão no log | Sim | Não |
-
----
-
-## Exercícios Práticos
-
-1. **Exercício 1:** Crie um novo banco de dados chamado `teste_transacoes`. Crie uma tabela `clientes` com os campos: `id`, `nome`, `email`. Insira 3 clientes.
-
-2. **Exercício 2:** Desabilite o autocommit e faça uma exclusão de todos os registros. Utilize `ROLLBACK` e verifique se os dados voltaram.
-
-3. **Exercício 3:** Repita o processo de exclusão, mas agora utilize `COMMIT` antes de verificar os dados. O que aconteceu de diferente?
-
-4. **Exercício 4 (Desafio):** Simule a situação do RH: insira 5 novos funcionários, inicie uma transação, exclua-os e, antes do commit, receba um "cancelamento" da solicitação. Como você recuperaria os dados?
-
-5. **Exercício 5 (Desafio):** Simule a situação dos logs: crie uma tabela de logs, insira 100 registros (use um loop ou insira manualmente), e utilize `TRUNCATE` para limpá-la. Compare o tempo de execução com um `DELETE` em uma tabela similar.
+| Comando                | Descrição                                                       |
+|------------------------|-----------------------------------------------------------------|
+| `CREATE DATABASE`      | Cria um novo banco de dados                                     |
+| `USE`                  | Seleciona o banco de dados ativo                                |
+| `CREATE TABLE`         | Cria uma nova tabela                                            |
+| `INSERT INTO`          | Insere registros na tabela                                      |
+| `SELECT`               | Consulta os registros                                           |
+| `START TRANSACTION`    | Inicia uma transação explícita                                  |
+| `COMMIT`               | Confirma as alterações permanentemente                          |
+| `ROLLBACK`             | Desfaz as alterações não confirmadas                            |
+| `DELETE`               | Remove registros (reversível com ROLLBACK dentro de transação)  |
+| `TRUNCATE`             | Remove todos os registros (commit implícito, não reversível)    |
+| `SET SQL_SAFE_UPDATES` | Liga/desliga o modo seguro do Workbench                         |
 
 ---
 
-## Conclusão
+## 8. Exercícios Práticos
+
+1. **Exercício 1:** Crie um novo banco de dados chamado `teste_transacoes`. Crie uma tabela `clientes` com os campos `id`, `nome` e `email`. Insira 3 clientes.
+
+2. **Exercício 2:** Inicie uma transação explícita, faça uma exclusão de todos os registros com `DELETE`, utilize `ROLLBACK` e verifique se os dados voltaram.
+
+3. **Exercício 3:** Repita o processo, mas agora execute `COMMIT` antes de tentar o `ROLLBACK`. Explique por que o `ROLLBACK` não tem efeito neste caso.
+
+4. **Exercício 4 (Desafio):** Insira 5 novos clientes, inicie uma transação e execute `TRUNCATE TABLE clientes`. Em seguida, tente `ROLLBACK`. O que aconteceu? Relacione o resultado com o conceito de commit implícito em DDL.
+
+5. **Exercício 5 (Desafio):** Crie duas tabelas idênticas `logs_delete` e `logs_truncate`, insira 10.000 registros em cada e compare o tempo de execução de `DELETE FROM` versus `TRUNCATE TABLE`. Documente os resultados.
+
+---
+
+## 9. Conclusão
 
 Nesta aula, aprendemos que:
 
-- O comando `DELETE` é versátil e permite exclusões seletivas, mas seu efeito pode ser revertido com `ROLLBACK` quando usado dentro de uma transação.
-- O comando `TRUNCATE` é ideal para limpezas rápidas e definitivas, especialmente em tabelas grandes ou temporárias.
-- O controle de transações com `COMMIT` e `ROLLBACK` é essencial para garantir a segurança e a integridade dos dados em cenários críticos.
+- O comando `DELETE` é versátil, permite exclusões seletivas com `WHERE` e seu efeito **pode ser revertido** com `ROLLBACK` quando usado dentro de uma transação explícita.
+- O comando `TRUNCATE` é ideal para limpezas rápidas e definitivas, mas por ser DDL ele provoca um **commit implícito** — portanto, **não pode ser desfeito** por `ROLLBACK`.
+- O controle de transações com `START TRANSACTION`, `COMMIT` e `ROLLBACK` é essencial para garantir a integridade dos dados em cenários críticos.
+- Entender quais comandos disparam commit implícito (`CREATE`, `DROP`, `ALTER`, `TRUNCATE`, etc.) é fundamental para evitar surpresas em produção.
 
-Com esses conhecimentos, você está preparado para lidar com situações de exclusão de dados no dia a dia de um administrador de banco de dados, sabendo quando agir com cautela e quando optar por uma abordagem mais agressiva.
+Com esses conhecimentos, você está preparado para lidar com situações de exclusão de dados no dia a dia de um administrador de banco de dados, sabendo quando agir com cautela (`DELETE` + transação) e quando optar por uma abordagem mais agressiva e definitiva (`TRUNCATE`).
