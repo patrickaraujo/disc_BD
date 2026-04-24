@@ -97,6 +97,7 @@ SELECT ...
 ## 🛠️ Exemplo 1: View Simples
 
 ### Usando banco World
+> Se não estiver já disponível no MySQL é possível baixar no [site](https://dev.mysql.com/doc/index-other.html) (também disponível aqui no diretório `world-db`).
 
 ```sql
 USE world;
