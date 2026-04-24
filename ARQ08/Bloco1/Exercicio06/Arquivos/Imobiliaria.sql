@@ -3,165 +3,174 @@
 -- Gabarito: estrutura completa do banco
 -- -----------------------------------------------------
 
+-- MySQL Workbench Forward Engineering
+
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema imobiliaria
+-- Schema mydb
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `imobiliaria` DEFAULT CHARACTER SET utf8;
-USE `imobiliaria`;
 
 -- -----------------------------------------------------
--- Table: TipoImovel
+-- Schema mydb
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `TipoImovel` (
-  `idTipoImovel` SMALLINT NOT NULL,
-  `TipoImovel` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`idTipoImovel`))
-ENGINE = InnoDB;
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8mb3 ;
+USE `mydb` ;
 
 -- -----------------------------------------------------
--- Table: Cidade
+-- Table `mydb`.`cidade`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Cidade` (
-  `CodCidade` SMALLINT NOT NULL,
+CREATE TABLE IF NOT EXISTS `mydb`.`cidade` (
+  `CodCidade` INT NOT NULL AUTO_INCREMENT,
   `Cidade` VARCHAR(100) NOT NULL,
-  `UF` ENUM('AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO') NULL,
+  `UF` ENUM('AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO') NOT NULL,
   PRIMARY KEY (`CodCidade`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+AUTO_INCREMENT = 13
+DEFAULT CHARACTER SET = utf8mb3;
+
 
 -- -----------------------------------------------------
--- Table: Praia
+-- Table `mydb`.`praia`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Praia` (
-  `idPraia` SMALLINT NOT NULL,
-  `NomePraia` VARCHAR(45) NULL,
-  PRIMARY KEY (`idPraia`))
-ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `mydb`.`praia` (
+  `IdPraia` INT NOT NULL AUTO_INCREMENT,
+  `NmPraia` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`IdPraia`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
 
 -- -----------------------------------------------------
--- Table: Proprietario
+-- Table `mydb`.`proprietario`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Proprietario` (
-  `idProprietario` INT NOT NULL,
-  `Nome` VARCHAR(100) NULL,
-  `RG` VARCHAR(15) NULL,
-  PRIMARY KEY (`idProprietario`))
-ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `mydb`.`proprietario` (
+  `IdProprietario` INT NOT NULL AUTO_INCREMENT,
+  `Nome` VARCHAR(100) NOT NULL,
+  `RG` VARCHAR(15) NOT NULL,
+  PRIMARY KEY (`IdProprietario`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
 
 -- -----------------------------------------------------
--- Table: Imovel
+-- Table `mydb`.`tipo_de_imovel`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Imovel` (
-  `idImovel` INT NOT NULL,
-  `QtdeQuartos` SMALLINT NULL,
-  `QtdeBanheiros` SMALLINT NULL,
-  `VistaMar` ENUM('N', 'S') NULL,
-  `Logradouro` VARCHAR(50) NULL,
-  `Numero` SMALLINT NULL,
-  `Complemento` VARCHAR(25) NULL,
-  `Bairro` VARCHAR(35) NULL,
-  `CEP` INT NULL,
-  `idTipoImovel` SMALLINT NULL,
-  `CodCidade` SMALLINT NULL,
-  `idPraia` SMALLINT NULL,
-  `idProprietario` INT NULL,
-  PRIMARY KEY (`idImovel`),
-  INDEX `fk_Imovel_TipoImovel_idx` (`idTipoImovel` ASC) VISIBLE,
-  INDEX `fk_Imovel_Cidade_idx` (`CodCidade` ASC) VISIBLE,
-  INDEX `fk_Imovel_Praia_idx` (`idPraia` ASC) VISIBLE,
-  INDEX `fk_Imovel_Proprietario_idx` (`idProprietario` ASC) VISIBLE,
-  CONSTRAINT `fk_Imovel_TipoImovel`
-    FOREIGN KEY (`idTipoImovel`)
-    REFERENCES `TipoImovel` (`idTipoImovel`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Imovel_Cidade`
+CREATE TABLE IF NOT EXISTS `mydb`.`tipo_de_imovel` (
+  `IdTpImovel` INT NOT NULL AUTO_INCREMENT,
+  `TipoImovel` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`IdTpImovel`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`imovel`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`imovel` (
+  `NrImovel` INT NOT NULL,
+  `QtdeQuartos` INT NOT NULL,
+  `QtdeBanheiros` INT NOT NULL,
+  `VistaMar` ENUM('N', 'S') NOT NULL,
+  `Logradouro` VARCHAR(50) NOT NULL,
+  `Numero` INT NOT NULL,
+  `Complemento` VARCHAR(25) NULL DEFAULT NULL,
+  `Bairro` VARCHAR(35) NOT NULL,
+  `CEP` INT NOT NULL,
+  `IdTpImovel` INT NOT NULL,
+  `CodCidade` INT NOT NULL,
+  `IdPraia` INT NOT NULL,
+  `IdProprietario` INT NOT NULL,
+  PRIMARY KEY (`NrImovel`, `IdTpImovel`, `CodCidade`, `IdPraia`, `IdProprietario`),
+  INDEX `fk_Imovel_Tipo_de_Imovel_idx` (`IdTpImovel` ASC) VISIBLE,
+  INDEX `fk_Imovel_Cidade1_idx` (`CodCidade` ASC) VISIBLE,
+  INDEX `fk_Imovel_Praia1_idx` (`IdPraia` ASC) VISIBLE,
+  INDEX `fk_Imovel_Proprietario1_idx` (`IdProprietario` ASC) VISIBLE,
+  CONSTRAINT `fk_Imovel_Cidade1`
     FOREIGN KEY (`CodCidade`)
-    REFERENCES `Cidade` (`CodCidade`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Imovel_Praia`
-    FOREIGN KEY (`idPraia`)
-    REFERENCES `Praia` (`idPraia`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Imovel_Proprietario`
-    FOREIGN KEY (`idProprietario`)
-    REFERENCES `Proprietario` (`idProprietario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `mydb`.`cidade` (`CodCidade`),
+  CONSTRAINT `fk_Imovel_Praia1`
+    FOREIGN KEY (`IdPraia`)
+    REFERENCES `mydb`.`praia` (`IdPraia`),
+  CONSTRAINT `fk_Imovel_Proprietario1`
+    FOREIGN KEY (`IdProprietario`)
+    REFERENCES `mydb`.`proprietario` (`IdProprietario`),
+  CONSTRAINT `fk_Imovel_Tipo_de_Imovel`
+    FOREIGN KEY (`IdTpImovel`)
+    REFERENCES `mydb`.`tipo_de_imovel` (`IdTpImovel`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
 
 -- -----------------------------------------------------
--- Table: Inquilino
+-- Table `mydb`.`inquilino`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Inquilino` (
-  `CodInquilino` INT NOT NULL,
-  `Nome` VARCHAR(100) NULL,
-  `CPF` INT NULL,
+CREATE TABLE IF NOT EXISTS `mydb`.`inquilino` (
+  `CodInquilino` INT NOT NULL AUTO_INCREMENT,
+  `Nome` VARCHAR(100) NOT NULL,
+  `CPF` INT NOT NULL,
   PRIMARY KEY (`CodInquilino`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
 
 -- -----------------------------------------------------
--- Table: ContratoAluguel
+-- Table `mydb`.`contratoaluguel`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `ContratoAluguel` (
+CREATE TABLE IF NOT EXISTS `mydb`.`contratoaluguel` (
   `NroContrato` INT NOT NULL,
-  `Inquilino_CodInquilino` INT NULL,
-  `Imovel_idImovel` INT NULL,
-  `DtContrato` DATE NULL,
-  `DtInicio` DATE NULL,
-  `DtFim` DATE NULL,
-  `ValorAluguel` DECIMAL(5,2) NULL,
-  PRIMARY KEY (`NroContrato`),
-  INDEX `fk_ContratoAluguel_Inquilino_idx` (`Inquilino_CodInquilino` ASC) VISIBLE,
-  INDEX `fk_ContratoAluguel_Imovel_idx` (`Imovel_idImovel` ASC) VISIBLE,
-  CONSTRAINT `fk_ContratoAluguel_Inquilino`
+  `Inquilino_CodInquilino` INT NOT NULL,
+  `Imovel_NrImovel` INT NOT NULL,
+  `DtContrato` DATE NOT NULL,
+  `DtInicio` DATE NOT NULL,
+  `DtFim` DATE NOT NULL,
+  `ValorAluguel` DECIMAL(5,2) NOT NULL,
+  PRIMARY KEY (`Inquilino_CodInquilino`, `Imovel_NrImovel`, `NroContrato`),
+  INDEX `fk_Inquilino_has_Imovel_Imovel1_idx` (`Imovel_NrImovel` ASC) VISIBLE,
+  INDEX `fk_Inquilino_has_Imovel_Inquilino1_idx` (`Inquilino_CodInquilino` ASC) VISIBLE,
+  CONSTRAINT `fk_Inquilino_has_Imovel_Imovel1`
+    FOREIGN KEY (`Imovel_NrImovel`)
+    REFERENCES `mydb`.`imovel` (`NrImovel`),
+  CONSTRAINT `fk_Inquilino_has_Imovel_Inquilino1`
     FOREIGN KEY (`Inquilino_CodInquilino`)
-    REFERENCES `Inquilino` (`CodInquilino`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_ContratoAluguel_Imovel`
-    FOREIGN KEY (`Imovel_idImovel`)
-    REFERENCES `Imovel` (`idImovel`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `mydb`.`inquilino` (`CodInquilino`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
 
 -- -----------------------------------------------------
--- Table: Mobilia
+-- Table `mydb`.`mobilia`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Mobilia` (
-  `idMobilia` INT NOT NULL,
-  `Descricao` VARCHAR(45) NULL,
-  PRIMARY KEY (`idMobilia`))
-ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `mydb`.`mobilia` (
+  `IdMobilia` INT NOT NULL AUTO_INCREMENT,
+  `Descricao` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`IdMobilia`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
 
 -- -----------------------------------------------------
--- Table: ItensMobilia
+-- Table `mydb`.`itensmoblia`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `ItensMobilia` (
+CREATE TABLE IF NOT EXISTS `mydb`.`itensmoblia` (
   `CodItemMobilia` INT NOT NULL,
-  `Mobilia_idMobilia` INT NOT NULL,
-  `Imovel_idImovel` INT NOT NULL,
-  `Qtde` SMALLINT(2) NULL,
-  PRIMARY KEY (`CodItemMobilia`),
-  INDEX `fk_ItensMobilia_Mobilia_idx` (`Mobilia_idMobilia` ASC) VISIBLE,
-  INDEX `fk_ItensMobilia_Imovel_idx` (`Imovel_idImovel` ASC) VISIBLE,
-  CONSTRAINT `fk_ItensMobilia_Mobilia`
-    FOREIGN KEY (`Mobilia_idMobilia`)
-    REFERENCES `Mobilia` (`idMobilia`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_ItensMobilia_Imovel`
-    FOREIGN KEY (`Imovel_idImovel`)
-    REFERENCES `Imovel` (`idImovel`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+  `Mobilia_IdMobilia` INT NOT NULL,
+  `Imovel_NrImovel` INT NOT NULL,
+  `Qtde` INT NOT NULL,
+  PRIMARY KEY (`Mobilia_IdMobilia`, `Imovel_NrImovel`, `CodItemMobilia`),
+  INDEX `fk_Mobilia_has_Imovel_Imovel1_idx` (`Imovel_NrImovel` ASC) VISIBLE,
+  INDEX `fk_Mobilia_has_Imovel_Mobilia1_idx` (`Mobilia_IdMobilia` ASC) VISIBLE,
+  CONSTRAINT `fk_Mobilia_has_Imovel_Imovel1`
+    FOREIGN KEY (`Imovel_NrImovel`)
+    REFERENCES `mydb`.`imovel` (`NrImovel`),
+  CONSTRAINT `fk_Mobilia_has_Imovel_Mobilia1`
+    FOREIGN KEY (`Mobilia_IdMobilia`)
+    REFERENCES `mydb`.`mobilia` (`IdMobilia`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
