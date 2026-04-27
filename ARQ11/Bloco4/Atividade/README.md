@@ -1,308 +1,409 @@
-# 🧠 Atividade 4 — Praticando Views
+# 🧠 Atividade 4 — Praticando Views com Banco World
 
-> **Duração:** 30-40 minutos  
+> **Duração:** 40-50 minutos  
 > **Formato:** Prática hands-on  
-> **Objetivo:** Criar views para simplificar consultas complexas
+> **Objetivo:** Dominar a criação e uso de views com o banco de dados World
 
 ---
 
-## 📋 Preparação
+## 📦 Pré-requisito: Banco World Instalado
+
+Certifique-se de que o banco World está instalado:
 
 ```sql
-USE Procs_Armazenados;
+SHOW DATABASES;
+USE world;
+SHOW TABLES; -- Deve mostrar: city, country, countrylanguage
+```
 
--- Criar tabelas para relacionamentos
-CREATE TABLE categoria (
-    categoria_id INT AUTO_INCREMENT,
-    categoria_nome VARCHAR(30) NOT NULL,
-    PRIMARY KEY (categoria_id)
-);
+Se não estiver instalado, consulte o diretório `world-db/` ou baixe em:  
+https://dev.mysql.com/doc/index-other.html
 
-CREATE TABLE fornecedor (
-    fornecedor_id INT AUTO_INCREMENT,
-    fornecedor_nome VARCHAR(50) NOT NULL,
-    fornecedor_cidade VARCHAR(30),
-    PRIMARY KEY (fornecedor_id)
-);
+---
 
--- Adicionar colunas em produto
-ALTER TABLE produto 
-ADD COLUMN categoria_id INT,
-ADD COLUMN fornecedor_id INT;
+## 📝 Exercício 1: View Simples de Cidades
 
--- Inserir dados de exemplo
-INSERT INTO categoria VALUES 
-    (null, 'Eletrônicos'),
-    (null, 'Periféricos'),
-    (null, 'Móveis');
+**Criar uma view `vw_CidadesBrasil` que:**
+- Mostre apenas cidades do Brasil (CountryCode = 'BRA')
+- Exiba: ID, Name, Population
+- Ordene por população decrescente
 
-INSERT INTO fornecedor VALUES 
-    (null, 'Dell Brasil', 'São Paulo'),
-    (null, 'Logitech', 'Rio de Janeiro'),
-    (null, 'Genérico LTDA', 'Curitiba');
+```sql
+-- Seu código aqui
+```
 
-UPDATE produto SET categoria_id = 1, fornecedor_id = 1 WHERE produto_id = 1;
-UPDATE produto SET categoria_id = 2, fornecedor_id = 2 WHERE produto_id = 2;
+**Teste:**
+```sql
+SELECT * FROM vw_CidadesBrasil LIMIT 10;
 ```
 
 ---
 
-## 📝 Exercício 1: View Simples
+## 📝 Exercício 2: View com Renomeação de Colunas
 
-**Criar uma view `vw_produtos_simples` que:**
-- Mostre apenas: produto_nome, produto_preco
-- Renomeie colunas para: 'Produto' e 'Preço'
-- Ordene por nome
+**Criar uma view `vw_PaisesSulAmericanos` que:**
+- Mostre países da América do Sul
+- Renomeie colunas: 'País', 'População', 'Área'
+- Ordene por população
 
-**Teste sua view:**
-
+**Teste:**
 ```sql
-SELECT * FROM vw_produtos_simples;
+SELECT * FROM vw_PaisesSulAmericanos;
 ```
 
 ---
 
-## 📝 Exercício 2: View com Cálculo
+## 📝 Exercício 3: View com Agregação
 
-**Criar uma view `vw_produtos_com_desconto` que:**
-- Mostre: nome, preço original, preço com 10% desconto
-- Use a function `fn_calculaDesconto` (se criou no Bloco 3)
-- Ou calcule direto: preco * 0.90
+**Criar uma view `vw_CidadesPorPais` que:**
+- Conte quantas cidades cada país tem
+- Mostre: nome do país, quantidade de cidades
+- Ordene por quantidade decrescente
 
-**Teste sua view:**
-
+**Teste:**
 ```sql
-SELECT * FROM vw_produtos_com_desconto;
+SELECT * FROM vw_CidadesPorPais LIMIT 10;
+
+-- Quantas cidades o Brasil tem?
+SELECT * FROM vw_CidadesPorPais WHERE `Nome do País` = 'Brazil';
+```
+
+**Esta view é atualizável?** Por quê?
+
+---
+
+## 📝 Exercício 4: View com JOIN (2 tabelas)
+
+**Criar uma view `vw_CidadesComPais` que:**
+- Una city e country
+- Mostre: nome da cidade, nome do país, população da cidade, continente
+- Filtrar apenas cidades com mais de 1 milhão de habitantes
+
+**Teste:**
+```sql
+SELECT * FROM vw_CidadesComPais 
+ORDER BY `População da Cidade` DESC 
+LIMIT 10;
 ```
 
 ---
 
-## 📝 Exercício 3: View com JOIN
+## 📝 Exercício 5: View com 3 Tabelas (Reproduzir vw_TESTE)
 
-**Criar uma view `vw_produtos_completo` que:**
-- Una: produto, categoria, fornecedor
-- Mostre: nome do produto, preço, nome da categoria, nome do fornecedor
-- Use INNER JOIN
-
-**Teste sua view:**
+**Criar a view conforme o exemplo da aula:**
 
 ```sql
-SELECT * FROM vw_produtos_completo;
-
--- Filtrar na view
-SELECT * FROM vw_produtos_completo 
-WHERE `Nome da Categoria` = 'Eletrônicos';
+CREATE OR REPLACE VIEW vw_TESTE AS 
+SELECT 
+    city.name AS 'Cidade', 
+    country.name AS 'País', 
+    language AS 'Idioma'
+FROM city 
+INNER JOIN country ON city.CountryCode = country.code
+INNER JOIN countrylanguage ON country.Code = countrylanguage.CountryCode
+ORDER BY language ASC;
 ```
 
----
-
-## 📝 Exercício 4: View com Classificação
-
-**Criar uma view `vw_produtos_classificados` que:**
-- Mostre: nome, preço, estoque
-- Adicione coluna 'Situação Estoque' usando CASE:
-  - 'CRÍTICO' se estoque < 10
-  - 'BAIXO' se estoque 10-50
-  - 'NORMAL' se estoque 51-100
-  - 'ALTO' se estoque > 100
-
-**Teste sua view:**
+**Teste com diferentes filtros:**
 
 ```sql
-SELECT * FROM vw_produtos_classificados;
+-- Cidades do Brasil que falam português
+SELECT * FROM vw_TESTE 
+WHERE País = 'Brazil' AND Idioma = 'Portuguese'
+LIMIT 10;
 
--- Ver apenas produtos críticos
-SELECT * FROM vw_produtos_classificados 
-WHERE `Situação Estoque` = 'CRÍTICO';
+-- Cidades que falam espanhol
+SELECT * FROM vw_TESTE 
+WHERE Idioma = 'Spanish'
+LIMIT 20;
+
+-- Quantas combinações cidade-idioma existem?
+SELECT COUNT(*) FROM vw_TESTE;
 ```
-
----
-
-## 📝 Exercício 5: View de Relatório
-
-**Criar uma view `vw_relatorio_estoque` que:**
-- Agrupe por categoria
-- Mostre: nome da categoria, quantidade de produtos, valor total em estoque
-- Valor total = SUM(preco * estoque)
-- Ordene por valor total decrescente
-
-**Teste sua view:**
-
-```sql
-SELECT * FROM vw_relatorio_estoque;
-```
-
-**⚠️ Esta view NÃO é atualizável (usa GROUP BY)!**
 
 ---
 
 ## 📝 Exercício 6: View Atualizável
 
-**Criar uma view `vw_produtos_ativos` que:**
-- Mostre apenas produtos com estoque > 0
-- Mostre: produto_id, produto_nome, produto_preco, produto_estoque
-- SEM GROUP BY, SEM funções agregadas
+**Seguir os passos da aula:**
 
-**Teste atualizando via view:**
+1. Criar tabela CountryPop COM chave primária:
 
 ```sql
--- Ver produtos
-SELECT * FROM vw_produtos_ativos;
+DROP TABLE IF EXISTS CountryPop;
+
+CREATE TABLE CountryPop (
+    name VARCHAR(50) PRIMARY KEY,
+    population INT,
+    continent VARCHAR(50)
+);
+
+INSERT INTO CountryPop 
+SELECT name, population, continent 
+FROM country;
+```
+
+2. Criar view de países asiáticos:
+
+```sql
+CREATE VIEW vw_AsiaPop AS 
+SELECT name, population
+FROM CountryPop 
+WHERE continent = 'Asia';
+```
+
+3. Testar atualização via view:
+
+```sql
+-- Ver Japão antes
+SELECT * FROM vw_AsiaPop WHERE name = 'Japan';
 
 -- Atualizar via view
-UPDATE vw_produtos_ativos 
-SET produto_preco = produto_preco * 1.05 
-WHERE produto_id = 1;
+UPDATE vw_AsiaPop 
+SET population = population + 1000 
+WHERE name = 'Japan';
 
--- Verificar (tabela original também foi atualizada!)
-SELECT * FROM produto WHERE produto_id = 1;
+-- Verificar mudança na view
+SELECT * FROM vw_AsiaPop WHERE name = 'Japan';
+
+-- Verificar mudança na tabela base
+SELECT * FROM CountryPop WHERE name = 'Japan';
+```
+
+4. Limpar:
+
+```sql
+DROP VIEW vw_AsiaPop;
+DROP TABLE CountryPop;
 ```
 
 ---
 
-## 📝 Exercício 7: View de Segurança
+## 📝 Exercício 7: Tentando Atualizar View com GROUP BY
 
-**Criar uma view `vw_produtos_publico` que:**
-- Esconda informações sensíveis
-- Mostre apenas: nome do produto, categoria
-- NÃO mostre: preço, estoque, fornecedor
-
-**Cenário:** Esta view seria usada para consulta pública
+**Reproduzir o erro da aula:**
 
 ```sql
-SELECT * FROM vw_produtos_publico;
+-- Tentar atualizar view com agregação
+UPDATE vw_CountryLangCount 
+SET Name = 'Albania II' 
+WHERE Name = 'Albania';
+```
+
+**Você deve receber o erro:**
+```
+Error Code: 1288. The target table vw_CountryLangCount 
+of the UPDATE is not updatable
+```
+
+**Agora corrija atualizando a tabela base:**
+
+```sql
+-- Ver dados originais
+SELECT * FROM country WHERE name LIKE '%Albania%';
+
+-- Atualizar na tabela base
+UPDATE country 
+SET name = 'Albania Teste' 
+WHERE code = 'ALB';
+
+-- Verificar na view (mudou automaticamente!)
+SELECT * FROM vw_CountryLangCount 
+WHERE name LIKE '%Albania%';
+
+-- Reverter alteração
+UPDATE country 
+SET name = 'Albania' 
+WHERE code = 'ALB';
 ```
 
 ---
 
 ## 📝 Exercício 8: View com CONCAT
 
-**Criar uma view `vw_info_completa` que:**
-- Concatene informações em texto
-- Exemplo: "Notebook Dell - Categoria: Eletrônicos - Fornecedor: Dell Brasil"
-- Use CONCAT()
+**Reproduzir o exemplo da tabela Imovel:**
 
-**Teste sua view:**
+1. Criar tabela Imovel (copie da aula)
+2. Inserir 2 registros
+3. Criar view vw_TESTE02 com endereço concatenado
+4. Consultar a view
+5. Comparar com tabela original
+
+**Agora modifique:**
+
+Crie sua própria view com CONCAT usando dados de `city` e `country`:
 
 ```sql
-SELECT * FROM vw_info_completa;
+CREATE OR REPLACE VIEW vw_CidadeCompleta AS
+SELECT 
+    city.ID,
+    CONCAT(city.Name, ' - ', country.Name, ' (', 
+           country.Continent, ')') AS 'Localização Completa',
+    city.Population AS 'População'
+FROM city
+INNER JOIN country ON city.CountryCode = country.code
+LIMIT 100;
+```
+
+**Teste:**
+```sql
+SELECT * FROM vw_CidadeCompleta 
+WHERE `Localização Completa` LIKE '%Brazil%';
 ```
 
 ---
 
-## 📝 Exercício 9: Usar Banco World
+## 📝 Exercício 9: View para Segurança
+
+**Cenário:** Você quer mostrar países para usuários externos, mas SEM revelar informações sensíveis.
+
+**Criar view `vw_PaisesPublico` que:**
+- Mostre apenas: nome, continente, região
+- NÃO mostre: população, área, PIB, governo, etc.
 
 ```sql
-USE world;
+CREATE VIEW vw_PaisesPublico AS
+SELECT 
+    Name AS 'País',
+    Continent AS 'Continente',
+    Region AS 'Região'
+FROM country;
+```
 
--- Ver tabelas disponíveis
-SHOW TABLES;
+**Teste:**
+```sql
+SELECT * FROM vw_PaisesPublico LIMIT 10;
+```
 
--- Criar view: cidades do Brasil
-CREATE OR REPLACE VIEW vw_cidades_brasil AS
-SELECT ID, Name AS 'Cidade', Population AS 'População'
+💡 **Agora você pode dar acesso a esta view sem expor dados sensíveis!**
+
+---
+
+## 📝 Exercício 10: Gerenciamento de Views
+
+**Execute os comandos:**
+
+```sql
+-- 1. Listar TODAS as views criadas
+SHOW FULL TABLES WHERE Table_type = 'VIEW';
+
+-- 2. Ver código de uma view específica
+SHOW CREATE VIEW vw_CidadesBrasil;
+
+-- 3. Alterar uma view existente
+CREATE OR REPLACE VIEW vw_CidadesBrasil AS
+SELECT ID, Name, Population, District
 FROM city
 WHERE CountryCode = 'BRA'
 ORDER BY Population DESC;
 
--- Consultar
-SELECT * FROM vw_cidades_brasil LIMIT 10;
+-- 4. Verificar alteração
+SELECT * FROM vw_CidadesBrasil LIMIT 5;
 
--- Criar view com JOIN
-CREATE OR REPLACE VIEW vw_paises_america AS
-SELECT 
-    co.Name AS 'País',
-    co.Continent AS 'Continente',
-    co.Population AS 'População',
-    co.Capital
-FROM country co
-WHERE co.Continent = 'South America'
-ORDER BY co.Population DESC;
-
-SELECT * FROM vw_paises_america;
+-- 5. Excluir views de teste
+DROP VIEW IF EXISTS vw_CidadeCompleta;
+DROP VIEW IF EXISTS vw_PaisesPublico;
+DROP VIEW IF EXISTS vw_TESTE;
+DROP VIEW IF EXISTS vw_TESTE02;
 ```
 
 ---
 
-## 📝 Exercício 10: Gerenciar Views
+## 📝 Exercício 11: Desafio Final
+
+**Criar uma view complexa `vw_RelatorioMundial` que:**
+
+- Una as 3 tabelas (city, country, countrylanguage)
+- Mostre: cidade, país, continente, idioma oficial, população da cidade
+- Filtre apenas idiomas oficiais (IsOfficial = 'T')
+- Ordene por população da cidade decrescente
+- Limite a 1000 registros (para performance)
 
 ```sql
-USE Procs_Armazenados;
+-- Seu código aqui
+CREATE OR REPLACE VIEW vw_RelatorioMundial AS
+-- Complete...
+```
 
--- Listar todas as views
-SHOW FULL TABLES WHERE Table_type = 'VIEW';
+**Teste diferentes consultas:**
 
--- Ver código de uma view
-SHOW CREATE VIEW vw_produtos_completo;
+```sql
+-- Top 10 cidades mais populosas com seus idiomas oficiais
+SELECT * FROM vw_RelatorioMundial LIMIT 10;
 
--- Alterar view
-CREATE OR REPLACE VIEW vw_produtos_simples AS
-SELECT produto_nome AS 'Produto', produto_preco AS 'R$'
-FROM produto
-WHERE produto_estoque > 0;
+-- Cidades do Brasil com português oficial
+SELECT * FROM vw_RelatorioMundial 
+WHERE País = 'Brazil';
 
--- Excluir view
-DROP VIEW vw_produtos_publico;
+-- Cidades da Europa
+SELECT * FROM vw_RelatorioMundial 
+WHERE Continente = 'Europe'
+LIMIT 20;
 ```
 
 ---
 
 ## ✅ Checklist de Conclusão
 
-- [ ] View simples criada e testada
-- [ ] View com cálculo criada e testada
-- [ ] View com JOIN criada e testada
-- [ ] View com CASE criada e testada
-- [ ] View de relatório (GROUP BY) criada
-- [ ] View atualizável criada e testada
-- [ ] View de segurança criada
-- [ ] View com CONCAT criada
-- [ ] Praticou com banco World
-- [ ] Entendeu quando view é atualizável
+- [ ] View de cidades do Brasil criada
+- [ ] View com renomeação de colunas criada
+- [ ] View com agregação (GROUP BY) criada
+- [ ] View com JOIN (2 tabelas) criada
+- [ ] View com 3 tabelas (vw_TESTE) reproduzida
+- [ ] Testou view atualizável com sucesso
+- [ ] Entendeu por que view com GROUP BY não é atualizável
+- [ ] Criou view com CONCAT
+- [ ] Criou view para segurança
+- [ ] Praticou gerenciamento de views
+- [ ] Completou desafio final
 
 ---
 
-## 💡 Dicas
+## 🎯 Perguntas para Reflexão
 
-- Views NÃO armazenam dados, apenas a consulta
+1. **Qual a diferença entre uma view e uma tabela?**
+
+2. **Por que uma view com GROUP BY não pode ser atualizada?**
+
+3. **Quando você usaria uma view em vez de criar uma nova tabela?**
+
+4. **Como views podem aumentar a segurança do banco de dados?**
+
+5. **Qual a vantagem de usar CREATE OR REPLACE em vez de DROP + CREATE?**
+
+---
+
+## 💡 Dicas Finais
+
+- Views NÃO ocupam espaço (exceto a definição)
 - Use prefixo `vw_` para identificar views
-- Views com GROUP BY não são atualizáveis
-- Views são ótimas para segurança e padronização
-- OR REPLACE facilita manutenção
-- SHOW FULL TABLES mostra views separadas
+- Views complexas podem afetar performance
+- Sempre documente o propósito de cada view
+- Use views para padronizar consultas em equipes
+- Views são ótimas para relatórios recorrentes
 
 ---
 
-## 🎯 Desafio Extra
+## 📁 Arquivo de Referência
 
-Crie uma view que:
-- Mostre top 5 produtos mais caros
-- Inclua classificação de estoque
-- Mostre valor total em estoque de cada um
-- Use pelo menos um JOIN
+Todo o código de views está em:  
+`arquivos/viewCode.sql`
 
 ---
 
-> ✅ **Parabéns! Você completou TODOS os blocos da Aula 11!**
+> ✅ **Parabéns! Você dominou Views e completou a Aula 11!**
 
 ---
 
-## 🎓 Resumo Final da Aula 11
+## 🎓 Resumo dos 4 Objetos Avançados
 
-Você aprendeu a criar e usar:
-
-✅ **Stored Procedures** - Lógica reutilizável  
-✅ **Triggers** - Ações automáticas  
-✅ **Functions** - Cálculos reutilizáveis  
-✅ **Views** - Consultas simplificadas  
-
-**Agora você pode:**
-- Automatizar tarefas no banco de dados
-- Proteger integridade dos dados
-- Reutilizar cálculos complexos
-- Simplificar acesso para usuários
-- Implementar segurança em nível de dados
+| Objeto | Retorna Valor | Modifica Dados | Quando Usar |
+|--------|---------------|----------------|-------------|
+| **Procedure** | Opcional | ✅ Sim | Lógica de negócio |
+| **Trigger** | ❌ Não | ✅ Sim | Ações automáticas |
+| **Function** | ✅ Sempre | ⚠️ Evitar | Cálculos reutilizáveis |
+| **View** | ✅ Sim (virtual) | ⚠️ Limitado | Consultas complexas |
 
 ---
 
-> 💭 *"Objetos avançados de BD transformam seu banco de dados de um simples repositório em um sistema inteligente e automatizado."*
+> 💭 *"Com Procedures, Triggers, Functions e Views, você transforma um banco de dados comum em um sistema inteligente, automatizado e seguro."*

@@ -1,7 +1,7 @@
 # 📘 Bloco 4 — Views: Simplificando Consultas Complexas
 
 > **Duração estimada:** 60 minutos  
-> **Objetivo:** Criar tabelas virtuais para simplificar consultas recorrentes
+> **Objetivo:** Criar tabelas virtuais para simplificar consultas recorrentes usando o banco World
 
 ---
 
@@ -13,9 +13,42 @@ Ao final deste bloco, você será capaz de:
 - Criar views simples e complexas
 - Usar views com JOINs e GROUP BY
 - Atualizar dados através de views
-- Implementar segurança com views
+- Entender quando views são atualizáveis
+- Criar views com múltiplas tabelas
+- Usar CONCAT em views
 - Gerenciar views
-- Escolher entre views e tabelas reais
+
+---
+
+## 📦 Preparação: Banco de Dados World
+
+### Sobre o Banco World
+
+O banco **World** é um banco de dados de exemplo fornecido pelo MySQL que contém informações sobre:
+- **city** - cidades do mundo
+- **country** - países
+- **countrylanguage** - idiomas falados em cada país
+
+### Instalação do Banco World
+
+> Se não estiver já disponível no MySQL é possível baixar no [site oficial](https://dev.mysql.com/doc/index-other.html).
+> 
+> Também está disponível no diretório `world-db/` desta aula.
+
+**Para instalar:**
+```sql
+-- Via MySQL Workbench: File > Run SQL Script > selecione world.sql
+
+-- Ou via linha de comando:
+mysql -u root -p < world.sql
+```
+
+**Verificar instalação:**
+```sql
+SHOW DATABASES; -- Deve aparecer 'world'
+USE world;
+SHOW TABLES;   -- Deve mostrar: city, country, countrylanguage
+```
 
 ---
 
@@ -25,87 +58,37 @@ Ao final deste bloco, você será capaz de:
 
 **View** (Visão) é uma **tabela virtual** baseada no resultado de uma consulta SELECT. Ela não armazena dados fisicamente, apenas a **definição da consulta**.
 
-### Analogia
+### Por que Views são Úteis?
 
-Pense em um **atalho no desktop**:
-- O atalho (view) aponta para um programa (consulta SELECT)
-- Ao clicar (consultar a view), executa o programa (roda o SELECT)
-- Se o programa muda, o atalho continua funcionando
-- Você não duplica o programa, só cria um acesso rápido
-
----
-
-## 🎯 Por que Usar Views?
-
-### Problema Sem Views
-
-Imagine que você escreve esta consulta 10 vezes por dia:
+Imagine escrever esta consulta 10 vezes por dia:
 
 ```sql
-SELECT p.numero, c.nome AS cliente, pr.descricao AS produto, p.valor_total
-FROM pedido p
-INNER JOIN cliente c ON p.cliente_id = c.id
-INNER JOIN item_pedido ip ON p.id = ip.pedido_id
-INNER JOIN produto pr ON ip.produto_id = pr.id
-WHERE p.status = 'ATIVO';
+SELECT city.name, country.name, language 
+FROM city 
+INNER JOIN country ON city.CountryCode = country.code
+INNER JOIN countrylanguage ON country.Code = countrylanguage.CountryCode;
 ```
 
-**Problemas:**
-- ❌ Retrabalho constante
-- ❌ Risco de erro ao reescrever
-- ❌ Difícil manter consistência
-- ❌ Se mudar estrutura, atualizar em 10 lugares
-
----
-
-### Solução Com View
-
-```sql
--- Criar a view UMA VEZ
-CREATE VIEW vw_pedidos_ativos AS
-SELECT p.numero, c.nome AS cliente, pr.descricao AS produto, p.valor_total
-FROM pedido p
-INNER JOIN cliente c ON p.cliente_id = c.id
-INNER JOIN item_pedido ip ON p.id = ip.pedido_id
-INNER JOIN produto pr ON ip.produto_id = pr.id
-WHERE p.status = 'ATIVO';
-
--- Usar sempre que precisar
-SELECT * FROM vw_pedidos_ativos;
-```
-
-✅ **Simples, rápido e sem erros!**
-
----
-
-## 📝 Sintaxe Básica
-
-```sql
-CREATE [OR REPLACE] VIEW nome_view [(colunas)]
-AS
-SELECT ...
-[WITH CHECK OPTION];
-```
-
-**Parâmetros:**
-- `OR REPLACE` → Substitui view existente
-- `(colunas)` → Renomeia colunas (opcional)
-- `WITH CHECK OPTION` → Valida modificações
+Com uma view, você escreve **UMA VEZ** e usa sempre que precisar!
 
 ---
 
 ## 🛠️ Exemplo 1: View Simples
 
-### Usando banco World
-> Se não estiver já disponível no MySQL é possível baixar no [site](https://dev.mysql.com/doc/index-other.html) (também disponível aqui no diretório `world-db`).
+### Preparação
 
 ```sql
 USE world;
+SHOW TABLES; -- Ver tabelas disponíveis
 
--- Ver tabelas disponíveis
-SHOW TABLES;
+-- Ver estrutura da tabela city
+SELECT * FROM city LIMIT 5;
+```
 
--- Criar view simples: apenas ID e Nome das cidades
+### Criando View Simples
+
+```sql
+-- Criar view que mostra apenas ID e Nome das cidades
 CREATE VIEW vw_ViewCity AS 
 SELECT ID, Name 
 FROM city;
@@ -114,116 +97,224 @@ FROM city;
 SELECT * FROM vw_ViewCity LIMIT 3;
 ```
 
-**Verificar:**
-```sql
-SHOW TABLES;
--- Agora aparece "vw_ViewCity" como se fosse uma tabela!
+**Resultado:**
 ```
+ID  | Name
+----|----------
+1   | Kabul
+2   | Qandahar
+3   | Herat
+```
+
+### Verificar que a View foi Criada
+
+```sql
+-- Views aparecem junto com as tabelas
+SHOW TABLES;
+```
+
+Você verá `vw_ViewCity` listada como se fosse uma tabela!
 
 ---
 
-## 🏷️ Exemplo 2: Renomeando Colunas
+## 🏷️ Exemplo 2: Renomeando Colunas na View
+
+### Tentando Criar View com Mesmo Nome (ERRO)
 
 ```sql
--- Criar view com nome de coluna customizado
+-- Isso dará ERRO porque a view já existe
+CREATE VIEW vw_ViewCity (Cidade) AS 
+SELECT Name 
+FROM city;
+```
+
+**Erro:**
+```
+Table 'vw_ViewCity' already exists
+```
+
+### Usar CREATE OR REPLACE
+
+```sql
+-- Substituir view existente
 CREATE OR REPLACE VIEW vw_ViewCity (Cidade) AS 
 SELECT Name 
-FROM City;
+FROM city;
 
--- Consultar
+-- Consultar view alterada
 SELECT * FROM vw_ViewCity LIMIT 3;
 ```
 
 **Resultado:**
 ```
 Cidade
+----------
 Kabul
 Qandahar
 Herat
 ```
 
+💡 **A coluna foi renomeada para "Cidade"!**
+
 ---
 
-## 🔗 Exemplo 3: View com JOINs e GROUP BY
+## 🌍 Exemplo 3: View com GROUP BY (Agregação)
 
-### Contar quantas línguas se falam em cada país
+### Contar Quantos Idiomas se Falam em Cada País
 
 ```sql
 CREATE OR REPLACE VIEW vw_CountryLangCount AS
 SELECT 
     Name, 
     COUNT(language) AS LangCount
-FROM Country, CountryLanguage
+FROM country, countrylanguage
 WHERE code = countrycode 
 GROUP BY name;
+```
 
--- Consultar
-SELECT * FROM vw_CountryLangCount ORDER BY name LIMIT 3;
+### Consultar a View
 
--- Buscar país específico
-SELECT * FROM vw_CountryLangCount WHERE name = 'Brazil';
+```sql
+-- Ver primeiros 3 países
+SELECT * FROM vw_CountryLangCount 
+ORDER BY name 
+LIMIT 3;
+
+-- Ver quantos idiomas se falam no Brasil
+SELECT * FROM vw_CountryLangCount 
+WHERE name = 'Brazil';
+```
+
+### Comparar com Dados Originais
+
+```sql
+-- Ver idiomas do Brasil na tabela original
+SELECT * FROM countrylanguage 
+WHERE countrycode = 'BRA';
 ```
 
 ---
 
-## 🔄 Views Atualizáveis
+## 🔄 Views Atualizáveis vs Não Atualizáveis
 
-Views podem receber INSERT, UPDATE e DELETE **se forem simples**.
+### Quando Uma View É Atualizável?
 
-### Quando uma view É atualizável:
+✅ **É atualizável quando:**
+- SELECT sem GROUP BY
+- SELECT sem funções agregadas (COUNT, SUM, AVG, etc)
+- SELECT sem DISTINCT
+- Tem chave primária na tabela base
+- JOINs simples
 
-✅ SELECT sem GROUP BY  
-✅ SELECT sem funções agregadas (COUNT, SUM, etc)  
-✅ SELECT sem DISTINCT  
-✅ SELECT de uma única tabela (ou JOINs simples)  
-
-### Quando NÃO é atualizável:
-
-❌ Usa GROUP BY  
-❌ Usa funções agregadas  
-❌ Usa DISTINCT  
-❌ JOINs complexos  
+❌ **NÃO é atualizável quando:**
+- Usa GROUP BY
+- Usa funções agregadas
+- Usa DISTINCT
+- JOINs complexos
 
 ---
 
-### Exemplo: View Atualizável
+## 📝 Exemplo 4: Criando Tabela para View Atualizável
+
+### Problema com Tabela Sem Chave Primária
 
 ```sql
--- Criar tabela de teste
+-- Criar tabela SEM chave primária (não recomendado)
 CREATE TABLE CountryPop 
 SELECT name, population, continent 
-FROM Country;
+FROM country;
+```
 
--- Criar view atualizável
+❌ **Views sobre esta tabela podem não ser atualizáveis!**
+
+### Solução: Criar com Chave Primária
+
+```sql
+-- Recriar tabela COM chave primária
+DROP TABLE IF EXISTS CountryPop;
+
+CREATE TABLE CountryPop (
+    name VARCHAR(50) PRIMARY KEY,
+    population INT,
+    continent VARCHAR(50)
+);
+
+-- Inserir dados
+INSERT INTO CountryPop 
+SELECT name, population, continent 
+FROM country;
+
+-- Verificar
+SELECT * FROM CountryPop LIMIT 5;
+```
+
+💡 **Por quê?** No MySQL, uma VIEW só permite UPDATE quando não há ambiguidade na identificação das linhas, o que exige uma chave única na tabela base.
+
+---
+
+## ✏️ Exemplo 5: View Atualizável
+
+### Criar View de Países Europeus
+
+```sql
 CREATE VIEW vw_EuroPop AS 
-SELECT Name, population 
+SELECT name, population
 FROM CountryPop 
 WHERE continent = 'Europe';
+```
 
--- Ver dados
-SELECT * FROM vw_EuroPop WHERE name = 'San Marino';
+### Consultar a View
 
--- ATUALIZAR via view
+```sql
+SELECT * FROM vw_EuroPop 
+WHERE name = 'San Marino';
+```
+
+### Atualizar VIA VIEW
+
+```sql
+-- Aumentar população em 1
 UPDATE vw_EuroPop 
-SET Population = Population + 1 
+SET population = population + 1 
 WHERE name = 'San Marino';
 
--- Verificar (view E tabela foram atualizadas!)
-SELECT * FROM vw_EuroPop WHERE name = 'San Marino';
-SELECT * FROM CountryPop WHERE name = 'San Marino';
+-- Verificar na view
+SELECT * FROM vw_EuroPop 
+WHERE name = 'San Marino';
+
+-- Verificar na tabela original (também foi atualizada!)
+SELECT name, population 
+FROM CountryPop 
+WHERE name = 'San Marino';
 ```
 
 ✅ **A view atualizou a tabela base!**
 
----
-
-### Exemplo: View NÃO Atualizável
+### Deletar VIA VIEW
 
 ```sql
--- Tentar atualizar view com GROUP BY
+-- Deletar registro via view
+DELETE FROM vw_EuroPop 
+WHERE name = 'San Marino';
+```
+
+### Limpar
+
+```sql
+DROP VIEW vw_EuroPop;
+```
+
+---
+
+## ❌ Exemplo 6: View NÃO Atualizável (GROUP BY)
+
+### Tentando Atualizar View com GROUP BY
+
+```sql
+-- Tentar atualizar view com agregação
 UPDATE vw_CountryLangCount 
-SET name = 'Albania II' 
-WHERE name = 'Albania';
+SET Name = 'Albania II' 
+WHERE Name = 'Albania';
 ```
 
 **Erro:**
@@ -232,56 +323,110 @@ Error Code: 1288. The target table vw_CountryLangCount
 of the UPDATE is not updatable
 ```
 
-❌ **Não funciona porque usa GROUP BY!**
+### Por Quê?
 
----
+A VIEW `vw_CountryLangCount` não pode ser atualizada porque:
+- Utiliza **GROUP BY**
+- Utiliza **COUNT()** (função de agregação)
+- O MySQL não consegue mapear o resultado para linhas específicas das tabelas originais
 
-## 🔐 Views para Segurança
-
-Views permitem **controlar o que cada usuário vê**.
-
-### Exemplo
+### Solução: Atualizar Tabela Base
 
 ```sql
--- Tabela completa (dados sensíveis)
-CREATE TABLE funcionario (
-    id INT,
-    nome VARCHAR(50),
-    salario DECIMAL(10,2),
-    departamento VARCHAR(30)
-);
+-- Ver país original
+SELECT * FROM country 
+WHERE name LIKE '%Albania%';
 
--- View pública (sem salário)
-CREATE VIEW vw_func_publico AS
-SELECT id, nome, departamento
-FROM funcionario;
-
--- Dar acesso apenas à view
-GRANT SELECT ON vw_func_publico TO 'usuario_comum'@'localhost';
+-- Atualizar diretamente na tabela base
+UPDATE country 
+SET name = 'Albania II' 
+WHERE code = 'ALB';
 ```
 
-💡 **Usuário comum vê nomes, mas NÃO vê salários!**
+---
+
+## 🔗 Exemplo 7: View com 3 Tabelas (INNER JOINs)
+
+### Ver Estrutura das Tabelas
+
+```sql
+SELECT * FROM city LIMIT 3;
+SELECT * FROM country LIMIT 3;
+SELECT * FROM countrylanguage LIMIT 3;
+```
+
+### Criar View com 3 JOINs
+
+```sql
+CREATE OR REPLACE VIEW vw_TESTE AS 
+SELECT 
+    city.name AS 'Cidade', 
+    country.name AS 'País', 
+    language AS 'Idioma'
+FROM city 
+INNER JOIN country ON city.CountryCode = country.code
+INNER JOIN countrylanguage ON country.Code = countrylanguage.CountryCode
+ORDER BY language ASC;
+```
+
+### Consultar a View
+
+```sql
+-- Ver primeiras 10 linhas
+SELECT * FROM vw_TESTE LIMIT 10;
+
+-- Filtrar por idioma
+SELECT * FROM vw_TESTE 
+WHERE Idioma = 'Portuguese';
+
+-- Filtrar por país
+SELECT * FROM vw_TESTE 
+WHERE País = 'Brazil'
+LIMIT 10;
+```
+
+💡 **Uma consulta complexa agora é apenas `SELECT * FROM vw_TESTE`!**
 
 ---
 
-## 🎨 Exemplo Avançado: View com CONCAT
+## 📍 Exemplo 8: View com CONCAT (Concatenação)
+
+### Criar Tabela de Imóveis
 
 ```sql
-CREATE TABLE Imovel (
-    idImovel INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    QtdeQuartos SMALLINT UNSIGNED NOT NULL,
-    QtdeBanheiros SMALLINT UNSIGNED NOT NULL,
-    VistaMar ENUM('N', 'S') NOT NULL,
-    Logradouro VARCHAR(50) NOT NULL,
-    Numero SMALLINT UNSIGNED NOT NULL,
-    Complemento VARCHAR(25) NULL,
-    Bairro VARCHAR(35) NOT NULL,
-    CEP INT ZEROFILL UNSIGNED NOT NULL,
-    PRIMARY KEY (idImovel)
-);
+CREATE TABLE IF NOT EXISTS `world`.`Imovel` (
+    `idImovel` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `QtdeQuartos` SMALLINT UNSIGNED NOT NULL,
+    `QtdeBanheiros` SMALLINT UNSIGNED NOT NULL,
+    `VistaMar` ENUM('N', 'S') NOT NULL,
+    `Logradouro` VARCHAR(50) NOT NULL,
+    `Numero` SMALLINT UNSIGNED NOT NULL,
+    `Complemento` VARCHAR(25) NULL,
+    `Bairro` VARCHAR(35) NOT NULL,
+    `CEP` INT ZEROFILL UNSIGNED NOT NULL,
+    PRIMARY KEY (`idImovel`)
+) ENGINE = InnoDB;
+```
 
--- View com endereço concatenado
-CREATE OR REPLACE VIEW vw_ImovelCompleto AS 
+### Inserir Dados
+
+```sql
+INSERT INTO Imovel (QtdeQuartos, QtdeBanheiros, VistaMar, Logradouro, 
+                    Numero, Complemento, Bairro, CEP) 
+VALUES (2, 1, 'N', 'Rua ABC', 13, 'Apto 15', 'Boqueirão', 1153040);
+
+INSERT INTO Imovel (QtdeQuartos, QtdeBanheiros, VistaMar, Logradouro, 
+                    Numero, Complemento, Bairro, CEP) 
+VALUES (5, 3, 'S', 'Rua dos Ricos', 333, 'Apto 275', 'Pitangueiras', 1151030);
+
+-- Ver dados inseridos
+SELECT * FROM Imovel;
+```
+
+### Criar View com Endereço Concatenado
+
+```sql
+CREATE OR REPLACE VIEW vw_TESTE02 AS 
 SELECT 
     IdImovel, 
     QtdeQuartos, 
@@ -289,56 +434,82 @@ SELECT
     VistaMar, 
     CONCAT(Logradouro, ', ', Numero, ', ', Complemento, ', ', 
            Bairro, ', ', CEP) AS 'Endereço Completo'
-FROM imovel;
-
--- Consultar
-SELECT * FROM vw_ImovelCompleto;
+FROM Imovel;
 ```
+
+### Consultar a View
+
+```sql
+SELECT * FROM vw_TESTE02;
+```
+
+**Resultado:**
+```
+IdImovel | QtdeQuartos | QtdeBanheiros | VistaMar | Endereço Completo
+---------|-------------|---------------|----------|----------------------------------
+1        | 2           | 1             | N        | Rua ABC, 13, Apto 15, Boqueirão, 1153040
+2        | 5           | 3             | S        | Rua dos Ricos, 333, Apto 275, Pitangueiras, 1151030
+```
+
+### Comparar com Tabela Original
+
+```sql
+-- Tabela original (dados separados)
+SELECT * FROM Imovel;
+```
+
+💡 **A view simplifica a visualização concatenando as colunas!**
 
 ---
 
 ## 🗑️ Gerenciando Views
 
-### Listar Views
+### Listar Todas as Views
 
 ```sql
--- Ver todas as views do banco atual
+-- Ver apenas views (não tabelas)
 SHOW FULL TABLES WHERE Table_type = 'VIEW';
+```
 
--- Ver código da view
+### Ver Código de Uma View
+
+```sql
 SHOW CREATE VIEW vw_ViewCity;
 ```
 
 ### Alterar View
 
 ```sql
--- Opção 1: Usar OR REPLACE
-CREATE OR REPLACE VIEW vw_teste AS
-SELECT ...;
+-- Opção 1: CREATE OR REPLACE
+CREATE OR REPLACE VIEW vw_ViewCity AS
+SELECT ID, Name, CountryCode
+FROM city;
 
--- Opção 2: Usar ALTER
-ALTER VIEW vw_teste AS
-SELECT ...;
+-- Opção 2: ALTER VIEW
+ALTER VIEW vw_ViewCity AS
+SELECT ID, Name
+FROM city;
 ```
 
 ### Excluir View
 
 ```sql
-DROP VIEW vw_EuroPop;
+DROP VIEW vw_TESTE;
+DROP VIEW vw_TESTE02;
 ```
 
 ---
 
-## 📊 View vs Tabela Real
+## 📊 Resumo: Views Atualizáveis
 
-| Aspecto | View | Tabela Real |
-|---------|------|-------------|
-| **Armazena dados** | ❌ Não | ✅ Sim |
-| **Ocupa espaço** | ❌ Mínimo | ✅ Sim |
-| **Performance leitura** | ⚠️ Depende da consulta | ✅ Rápido |
-| **Atualização** | ⚠️ Limitada | ✅ Total |
-| **Manutenção** | ✅ Fácil | ⚠️ Mais trabalhosa |
-| **Usa dados atuais** | ✅ Sempre | ⚠️ Precisa atualizar |
+| Característica | View Atualizável | View NÃO Atualizável |
+|----------------|------------------|----------------------|
+| **GROUP BY** | ❌ Não tem | ✅ Tem |
+| **Agregações (COUNT, SUM)** | ❌ Não tem | ✅ Tem |
+| **DISTINCT** | ❌ Não tem | ✅ Tem |
+| **Chave Primária** | ✅ Tem na tabela base | ⚠️ Pode não ter |
+| **Pode UPDATE** | ✅ Sim | ❌ Não |
+| **Pode DELETE** | ✅ Sim | ❌ Não |
 
 ---
 
@@ -346,26 +517,26 @@ DROP VIEW vw_EuroPop;
 
 ### ✅ Use views para:
 
-- Consultas complexas repetidas
-- Simplificar acesso para usuários
-- Segurança (ocultar colunas sensíveis)
-- Padronizar consultas em equipes
-- Compatibilidade (manter interface antiga após mudanças)
+- **Simplificar consultas complexas** (JOINs, subconsultas)
+- **Padronizar acesso** em equipes
+- **Segurança** (ocultar colunas sensíveis)
+- **Compatibilidade** (manter interface após mudanças)
+- **Formatação** (CONCAT, DATE_FORMAT, etc)
 
 ### ❌ Evite views para:
 
-- Operações que precisam de alta performance
+- Operações que exigem alta performance
 - Quando precisa modificar dados frequentemente
 - Views muito complexas (muitos JOINs)
-- Dados que mudam o tempo todo
+- Quando a tabela base é suficiente
 
 ---
 
 ## ✏️ Atividade Prática
 
-### 📝 Atividade 4 — Criando Views
+### 📝 Atividade 4 — Praticando Views com World
 
-**Objetivo:** Criar views para simplificar consultas
+**Objetivo:** Criar views usando o banco World
 
 Acesse a atividade completa em: [📁 Atividade/README.md](./Atividade/README.md)
 
@@ -376,12 +547,15 @@ Acesse a atividade completa em: [📁 Atividade/README.md](./Atividade/README.md
 Neste bloco você aprendeu:
 
 - O que são Views (tabelas virtuais)
-- Criar views simples e complexas
-- Usar views com JOINs, GROUP BY, CONCAT
-- Views atualizáveis vs não atualizáveis
-- Implementar segurança com views
-- Gerenciar views (criar, alterar, excluir)
-- Quando usar views vs tabelas reais
+- Instalar e usar o banco World
+- Criar views simples com CREATE VIEW
+- Substituir views com CREATE OR REPLACE
+- Criar views com GROUP BY e agregações
+- Quando views são atualizáveis
+- Importância da chave primária para views atualizáveis
+- Criar views com múltiplos JOINs (3 tabelas)
+- Usar CONCAT em views
+- Gerenciar views (listar, alterar, excluir)
 
 ---
 
@@ -389,45 +563,35 @@ Neste bloco você aprendeu:
 
 💡 **View = tabela virtual (não armazena dados)**
 
-💡 **Simplifica consultas complexas repetidas**
+💡 **CREATE OR REPLACE para atualizar views**
 
-💡 **Pode ser atualizável se for simples**
+💡 **GROUP BY e COUNT impedem atualizações**
 
-💡 **Ótima para segurança e padronização**
+💡 **Chave primária necessária para views atualizáveis**
 
-💡 **Prefixo vw_ é boa prática**
+💡 **Views com JOINs simplificam consultas complexas**
 
----
-
-## 🎓 Conclusão da Aula 11
-
-Parabéns! Você completou todos os 4 blocos sobre **Objetos Avançados de BD**:
-
-✅ **Bloco 1** - Stored Procedures (lógica reutilizável)  
-✅ **Bloco 2** - Triggers (ações automáticas)  
-✅ **Bloco 3** - Functions (cálculos reutilizáveis)  
-✅ **Bloco 4** - Views (consultas simplificadas)  
-
-**Agora você sabe:**
-- Automatizar tarefas com procedures
-- Proteger dados com triggers
-- Reutilizar cálculos com functions
-- Simplificar acessos com views
+💡 **CONCAT útil para formatar dados em views**
 
 ---
 
-## 📚 Comandos SQL Aprendidos
+## 📚 Comandos SQL Praticados
 
 ```sql
 -- Criar view
-CREATE [OR REPLACE] VIEW nome AS
-SELECT ...;
+CREATE VIEW nome AS SELECT ...;
+
+-- Substituir view
+CREATE OR REPLACE VIEW nome AS SELECT ...;
 
 -- Consultar view
 SELECT * FROM nome_view;
 
--- Atualizar via view
+-- Atualizar via view (se atualizável)
 UPDATE nome_view SET ... WHERE ...;
+
+-- Deletar via view (se atualizável)
+DELETE FROM nome_view WHERE ...;
 
 -- Listar views
 SHOW FULL TABLES WHERE Table_type = 'VIEW';
@@ -435,13 +599,34 @@ SHOW FULL TABLES WHERE Table_type = 'VIEW';
 -- Ver código
 SHOW CREATE VIEW nome;
 
--- Alterar view
-ALTER VIEW nome AS SELECT ...;
-
 -- Excluir view
 DROP VIEW nome;
 ```
 
 ---
 
-> 💭 *"Views são como janelas para seus dados: você vê apenas o que precisa, da forma que precisa, sem tocar nos dados reais."*
+## 🎓 Conclusão da Aula 11
+
+Parabéns! Você completou todos os 4 blocos sobre **Objetos Avançados de BD**:
+
+✅ **Bloco 1** - Stored Procedures  
+✅ **Bloco 2** - Triggers  
+✅ **Bloco 3** - Functions  
+✅ **Bloco 4** - Views  
+
+**Agora você domina:**
+- Automatizar tarefas com procedures
+- Proteger dados com triggers
+- Reutilizar cálculos com functions
+- Simplificar acessos com views
+
+---
+
+## 📁 Arquivo de Código
+
+Todo o código deste bloco está disponível em:  
+`arquivos/viewCode.sql`
+
+---
+
+> 💭 *"Views são como janelas customizadas para seus dados: você vê apenas o que precisa, da forma que precisa, sem modificar os dados originais."*
