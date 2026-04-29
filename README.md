@@ -1,183 +1,233 @@
-# Aula ARQ12 — Transações e Controle Transacional na Prática
+# Banco de Dados
 
-Bem-vindo à **Aula ARQ12** da disciplina de **Banco de Dados**. Esta é uma aula **100% prática**, na qual você vai aplicar — em laboratório — todos os conceitos de **transações**, **Stored Procedures**, **Triggers** e **gestão de usuários** que já estudou. O objetivo não é reapresentar a teoria, e sim **construir, com suas próprias mãos**, um conjunto de transações controladas, com auditoria automática e tratamento de erro.
+Repositório destinado ao armazenamento de **materiais, arquivos, exercícios e práticas** da disciplina de **Banco de Dados**.  
+O curso aborda desde os **fundamentos conceituais sobre dados e informação**, passando por **modelagem conceitual e relacional**, até **SQL, transações e apoio à decisão**, utilizando o **MySQL** como SGBD de referência.
 
-> 🧑‍🏫 **Importante:** os blocos desta aula são **guias de implementação** — eles indicam *o que* construir, *o que* observar e *como validar*, mas **não entregam o código pronto**. Você é convidado a escrever o SQL a partir do que já sabe. Apenas alguns comandos específicos (handler de erro de SQL, sintaxe de Trigger e gestão de usuários) são apresentados explicitamente, por se tratar de comandos que normalmente recebem pouca atenção em aulas teóricas.
-
----
-
-## 🎯 Objetivos da Aula
-
-* Aplicar `START TRANSACTION`, `COMMIT` e `ROLLBACK` para controlar transações manuais.
-* Encapsular transações dentro de Stored Procedures, com tratamento de erro via `DECLARE CONTINUE HANDLER`.
-* Construir uma tabela de auditoria e uma Trigger `AFTER UPDATE` que registra automaticamente alterações de preço.
-* Combinar Trigger e Stored Procedure transacional em um mesmo cenário.
-* Criar, conceder privilégios, listar e excluir usuários no MySQL.
-* Resolver, ao final, um exercício integrador que reúne os 6 elementos: BD → tabela → Trigger → tabela de auditoria → Stored Procedure transacional → testes.
+<!--O foco inicial é **formação conceitual sólida**, alinhada à Pirâmide DIKW, tipos de dados e organização da informação.-->
 
 ---
 
-## 📂 Organização dos Blocos
+## 📂 Estrutura do Repositório
 
-A aula está dividida em **oito blocos práticos**. Cada bloco é independente do ponto de vista didático, mas o **estado do banco de dados é cumulativo** — execute na ordem.
-
-### [Bloco 01 — Preparação do Ambiente: Autocommit e Banco de Trabalho](./Bloco1/README.md)
-* **Foco:** verificar e desativar o `autocommit`; (re)criar o banco `procs_armazenados`; criar a tabela `LIVROS`.
-* **Destaque:** `SELECT @@autocommit`, `SET autocommit = 0`, `CREATE DATABASE`, `CREATE TABLE … ENGINE = InnoDB`.
-
-### [Bloco 02 — Transações Manuais: ROLLBACK e COMMIT](./Bloco2/README.md)
-* **Foco:** abrir transações com `START TRANSACTION`, observar o efeito de `ROLLBACK` e de `COMMIT`.
-* **Destaque:** comportamento de `INSERT` antes e depois do `COMMIT`; uso de `TRUNCATE` para zerar a tabela entre experimentos.
-
-### [Bloco 03 — Encapsulando Transações em Stored Procedures](./Bloco3/README.md)
-* **Foco:** criar `sp_insere_livros` — uma SP que insere um livro com tratamento de erro automático.
-* **Destaque:** `DECLARE erro_sql boolean DEFAULT FALSE`, `DECLARE CONTINUE HANDLER FOR SQLEXCEPTION`, fluxo `IF erro_sql = FALSE THEN COMMIT ELSE ROLLBACK`.
-
-### [Bloco 04 — Aplicando em Cenário Real: ItemPedido × Produtos](./Bloco4/README.md)
-* **Foco:** recriar as tabelas `ItemPedido` e `Produtos`, e construir `sp_insere_itempedido`.
-* **Destaque:** consolidação do padrão de SP transacional em um cenário diferente (pedido + estoque).
-
-### [Bloco 05 — Auditoria Automática: tab_audit + Trigger Audita_Livros](./Bloco5/README.md)
-* **Foco:** criar a tabela `tab_audit` e a Trigger `Audita_Livros` (`AFTER UPDATE ON LIVROS`).
-* **Destaque:** sintaxe `FOR EACH ROW BEGIN … END`, uso de `OLD.coluna` e `NEW.coluna`, função `CURRENT_USER` e `USER()`.
-
-### [Bloco 06 — Integrando Trigger + Transação em SP](./Bloco6/README.md)
-* **Foco:** construir `sp_altera_livros` — SP transacional que atualiza o preço do livro e dispara, automaticamente, a Trigger de auditoria.
-* **Destaque:** integração `Trigger ↔ SP`, validação dos registros gerados em `tab_audit`.
-
-### [Bloco 07 — Gestão de Usuários e Privilégios](./Bloco7/README.md)
-* **Foco:** criar, listar, conceder privilégios e remover usuários no MySQL.
-* **Destaque:** `CREATE USER`, `GRANT ALL PRIVILEGES`, `SHOW GRANTS`, `FLUSH PRIVILEGES`, `DROP USER`.
-
-### [Bloco 08 — Exercício Integrador: Auditoria de Alteração de Preço](./Bloco8/README.md)
-* **Foco:** resolver o exercício que reúne tudo: recriar `tab_audit` (com `codigo_Produto BIGINT`), Trigger, Stored Procedure transacional e bateria de testes.
-* **Destaque:** entrega final da aula — sem código guia, apenas requisitos e critérios de validação.
-
----
-
-## 🚀 Como estudar este conteúdo
-
-1. Abra o **Bloco 1** e **execute os passos no MySQL Workbench** — não pule a verificação do `autocommit`.
-2. Avance para o **Bloco 2** e observe (de fato, com `SELECT * FROM LIVROS` antes e depois) o efeito do `ROLLBACK` e do `COMMIT`.
-3. No **Bloco 3**, escreva sua primeira SP transacional. Releia os três comandos exibidos no guia e entenda **por que eles aparecem juntos**.
-4. Reaplique o padrão no **Bloco 4** com `ItemPedido` e `Produtos`.
-5. Construa, no **Bloco 5**, a tabela de auditoria e a Trigger.
-6. Faça a integração no **Bloco 6** — este é o coração da aula.
-7. Aprenda a controlar usuários no **Bloco 7**.
-8. Resolva o **Bloco 8** sem consultar o código-fonte dos blocos anteriores até esgotar suas tentativas.
-
-> ⚠️ **Importante:** o **estado do banco de dados é cumulativo** entre os blocos. Cada bloco pressupõe que o anterior foi executado com sucesso. Se algo der errado, recomece do Bloco 1 (basta `DROP DATABASE procs_armazenados;` e seguir).
-
----
-
-## 🛠️ Pré-requisitos
-
-* **MySQL** e **MySQL Workbench** instalados e funcionando.
-* Conhecimento prévio de:
-  * DDL (`CREATE`, `ALTER`, `DROP`, constraints) — visto em ARQ04 a ARQ08.
-  * DML (`INSERT`, `UPDATE`, `DELETE`, `SELECT`) — visto em ARQ09 e ARQ10.
-  * Stored Procedures, Triggers, Functions e Views — vistos em ARQ11.
-* O banco `procs_armazenados` (criado em ARQ11) será **recriado** no Bloco 1, então **faça backup do que precisar manter** antes de começar.
-
----
-
-## 📌 Importante
-
-* Esta aula é **100% prática** — todo o conteúdo é construído diretamente no MySQL Workbench.
-* O guia **não entrega código pronto**, exceto para os comandos abaixo, que merecem destaque e explicação dirigida:
-  * `FOR EACH ROW BEGIN` — cabeçalho do corpo de uma Trigger.
-  * `DECLARE erro_sql boolean DEFAULT FALSE;` — variável de controle de erro.
-  * `DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET erro_sql = TRUE;` — handler que captura qualquer exceção SQL.
-  * `START TRANSACTION;` — abre uma transação dentro de uma SP.
-  * `CREATE USER`, `GRANT ALL PRIVILEGES`, `SHOW GRANTS`, `FLUSH PRIVILEGES`, `DROP USER` — comandos de DCL menos rotineiros em sala.
-* **Cada bloco contém atividade obrigatória** (`Atividade/README.md`).
-* **Cada bloco mantém um arquivo `codigo-fonte/COMANDOS-BD-03-bloco{N}.sql`** — esse arquivo serve como **gabarito de referência**, a ser consultado **apenas após a tentativa do aluno**.
-
----
-
-## 🎯 Ao Final desta Aula
-
-Você será capaz de:
-
-✅ Controlar transações manualmente com `START TRANSACTION`, `COMMIT` e `ROLLBACK`.
-✅ Construir Stored Procedures transacionais robustas, com tratamento de erro.
-✅ Implementar auditoria automática com Triggers `AFTER UPDATE`.
-✅ Combinar Trigger e Stored Procedure em um cenário real.
-✅ Gerenciar usuários e privilégios no MySQL.
-✅ Resolver, de forma autônoma, um exercício integrador que mescla todos os elementos acima.
-
----
-
-## 📊 Mapa de Comandos Trabalhados na Aula
-
-| Categoria | Comandos / Construções |
-|-----------|------------------------|
-| **Sessão** | `SELECT @@autocommit`, `SET autocommit = 0` |
-| **DDL** | `CREATE DATABASE`, `CREATE TABLE … ENGINE = InnoDB`, `DROP DATABASE`, `TRUNCATE TABLE` |
-| **DML** | `INSERT INTO`, `UPDATE`, `DELETE FROM`, `SELECT * FROM` |
-| **TCL** | `START TRANSACTION`, `COMMIT`, `ROLLBACK` |
-| **Stored Procedure** | `CREATE PROCEDURE`, `CALL`, `DELIMITER //`, `BEGIN … END`, parâmetros `IN` |
-| **Tratamento de erro** | `DECLARE … boolean DEFAULT FALSE`, `DECLARE CONTINUE HANDLER FOR SQLEXCEPTION` |
-| **Trigger** | `CREATE TRIGGER … AFTER UPDATE ON …`, `FOR EACH ROW`, `OLD.coluna`, `NEW.coluna`, `DROP TRIGGER` |
-| **DCL** | `CREATE USER`, `GRANT ALL PRIVILEGES`, `SHOW GRANTS`, `FLUSH PRIVILEGES`, `DROP USER` |
-
----
-
-### Estrutura de pastas da Aula `ARQ12`:
-
-```
-ARQ12/
-├── Bloco1/ (Autocommit + Banco + Tabela LIVROS)
-│   ├── README.md
-│   ├── Atividade/
-│   │   └── README.md
-│   └── codigo-fonte/
-│       └── COMANDOS-BD-03-bloco1.sql
-├── Bloco2/ (Transações Manuais — ROLLBACK e COMMIT)
-│   ├── README.md
-│   ├── Atividade/
-│   │   └── README.md
-│   └── codigo-fonte/
-│       └── COMANDOS-BD-03-bloco2.sql
-├── Bloco3/ (sp_insere_livros — SP Transacional)
-│   ├── README.md
-│   ├── Atividade/
-│   │   └── README.md
-│   └── codigo-fonte/
-│       └── COMANDOS-BD-03-bloco3.sql
-├── Bloco4/ (sp_insere_itempedido — Cenário Real)
-│   ├── README.md
-│   ├── Atividade/
-│   │   └── README.md
-│   └── codigo-fonte/
-│       └── COMANDOS-BD-03-bloco4.sql
-├── Bloco5/ (tab_audit + Trigger Audita_Livros)
-│   ├── README.md
-│   ├── Atividade/
-│   │   └── README.md
-│   └── codigo-fonte/
-│       └── COMANDOS-BD-03-bloco5.sql
-├── Bloco6/ (sp_altera_livros — Trigger + SP)
-│   ├── README.md
-│   ├── Atividade/
-│   │   └── README.md
-│   └── codigo-fonte/
-│       └── COMANDOS-BD-03-bloco6.sql
-├── Bloco7/ (Gestão de Usuários e Privilégios)
-│   ├── README.md
-│   ├── Atividade/
-│   │   └── README.md
-│   └── codigo-fonte/
-│       └── COMANDOS-BD-03-bloco7.sql
-├── Bloco8/ (Exercício Integrador)
-│   ├── README.md
-│   ├── Atividade/
-│   │   └── README.md
-│   └── codigo-fonte/
-│       └── COMANDOS-BD-03-bloco8.sql
-└── README.md (este arquivo)
+```text
+.
+├── ARQ04/
+├── ARQ06/
+└── README.md
 ```
 
+Cada aula é organizada internamente em **2 blocos didáticos**, combinando **conceito, observação, prática guiada e consolidação**.
+
 ---
 
-> 💭 *"Transação não é sintaxe — é compromisso. Ou tudo ou nada."*
+## 📚 Ementa Detalhada
+
+---
+
+## 📅 📌 CALENDÁRIO – AULAS PRÁTICAS
+
+---
+
+### 🔹 MARÇO – MODELAGEM E WORKBENCH
+
+| Tema                                                                   | Local       |
+| ---------------------------------------------------------------------- | ----------- |
+| Modelo Lógico – DER + exercícios + introdução ao Modelo Físico (ARQ04) | Sala        |
+| Construção do DER e Modelo Físico no Workbench (ARQ06)                 | Laboratório |
+| Alterando DER e sincronizando com BD (ARQ07)                           | Laboratório |
+| Construção do DER – exercício com 9 tabelas (ARQ08)                    | Laboratório |
+
+---
+
+### 🔹 MARÇO / ABRIL – SQL NA PRÁTICA
+
+| Tema                                                                      | Local       |
+| ------------------------------------------------------------------------- | ----------- |
+| SQL prática + iniciar COMANDOS-BD-01                                      | Laboratório |
+| Finalizar COMANDOS-BD-01 + iniciar objetos armazenados (ARQ11/12 + BD-02) | Laboratório |
+| Stored Procedure, Trigger, Function e View – prática                      | Laboratório |
+
+---
+
+### 🔹 ABRIL / MAIO – CONTROLE TRANSACIONAL (SEU BLOCO FORTE 🔥)
+
+| Tema                                                  | Local       |
+| ----------------------------------------------------- | ----------- |
+| Controle Transacional – prática (ARQ13/15 + BD-03/04) | Laboratório |
+| Controle Transacional – prática                       | Laboratório |
+| Controle Transacional – prática                       | Laboratório |
+| Controle Transacional – prática                       | Laboratório |
+
+---
+
+### 📊 Resumo da Carga Prática
+
+* ✅ 4 aulas – Modelagem prática
+* ✅ 3 aulas – SQL prática
+* ✅ 4 aulas – Transações práticas
+
+📌 **Total: 11 aulas práticas**
+
+---
+
+### 🎯 Perfil das Aulas:
+
+* Construção real de DER
+* Workbench
+* SQL executando código
+* Stored Procedure
+* Trigger
+* Function
+* Controle de transações
+* Lock e concorrência
+* Sistema financeiro prático
+
+<!--
+### Aula 01 — Fundamentos e Ambientação: Introdução a Banco de Dados
+- Visão geral da disciplina (ementa)
+- O que é BD, SGBD e Sistema de BD Importância dos dados nas organizações
+- Dados, informação, conhecimento e sabedoria (DIKW)
+- Tipos de dados: qualitativos, quantitativos, estruturados e não estruturados
+- Banco de Dados × SGBD × Sistema de BD
+- Apresentação do MySQL e MySQL Workbench
+- Visualização de tabelas reais (sem SQL)
+- Importância dos dados nas organizações
+
+
+---
+
+### Aula 02 — Arquitetura de BD e Papéis
+- Arquitetura de sistemas de BD
+- Papéis: DBA, analista, programador, usuário
+- Mini-mundo
+
+**Prática**
+- Navegação no Workbench
+- Criação de schema vazio
+
+---
+
+### Aula 03 — Modelagem Conceitual: MER
+- Entidade, atributo e relacionamento
+- Cardinalidades
+
+**Prática**
+- Estudo de caso simples
+- Introdução ao DER no Workbench
+
+---
+
+### Aula 04 — DER na Prática
+- Entidades fracas
+- Relacionamentos N:N
+- Atributos compostos
+
+**Prática**
+- DER completo (Família ou Imobiliária)
+
+---
+
+### Aula 05 — Revisão de MER / DER
+- Revisão geral
+- Avaliação conceitual
+
+---
+
+### Aula 06 — Modelo Relacional
+- Tabela, tupla, atributo
+- Chaves primária e estrangeira
+
+---
+
+### Aula 07 — Normalização
+- 1FN, 2FN, 3FN
+- Dependência funcional
+
+---
+
+### Aula 08 — SQL DDL
+- CREATE, DROP, ALTER
+- Constraints
+
+---
+
+### Aula 09 — SQL DML
+- INSERT, UPDATE, DELETE
+
+---
+
+### Aula 10 — SELECT
+- SELECT, WHERE, ORDER BY
+
+---
+
+### Aulas 11–13 — SQL Avançado e Transações
+- JOIN, agregações, GROUP BY
+- Stored Procedures e Triggers
+- ACID e concorrência
+
+---
+
+### Aula 14 — Apoio à Decisão
+- SAD, DW, Data Mart
+
+---
+
+### Aula 15 — Revisão Geral
+- DER → Relacional → SQL
+
+---
+
+### Aula 16 — Avaliação Final / Encerramento
+- Avaliação prática ou projeto em grupo
+-->
+
+---
+
+## 🎥 Recursos Complementares (Playlists)
+
+Alguns conteúdos da disciplina foram **complementados por playlists do YouTube** que ajudam na compreensão prática das ferramentas e conceitos.
+
+### 🔹 MySQL Workbench
+
+📺 Playlist:
+[https://www.youtube.com/playlist?list=PLfvOpw8k80WoSXjfGFci23SPob_PdvpHx](https://www.youtube.com/playlist?list=PLfvOpw8k80WoSXjfGFci23SPob_PdvpHx)
+
+**Descrição**
+
+A playlist **MySQL Workbench** tem como objetivo ensinar o aluno a **criar modelos relacionais utilizando a ferramenta MySQL Workbench**.
+
+O **MySQL Workbench** é uma ferramenta visual de design de banco de dados que integra:
+
+* desenvolvimento
+* administração
+* design
+* criação e manutenção de SQL
+
+tudo em um único **ambiente integrado para o sistema de banco de dados MySQL**.
+
+Esse material apoia principalmente as aulas de:
+
+* Modelagem conceitual (DER)
+* Modelagem lógica
+* Construção do modelo físico
+* Sincronização do modelo com o banco de dados
+
+---
+
+### 🔹 SQL e Banco de Dados
+
+📺 Playlist:
+[https://www.youtube.com/playlist?list=PLTW8p5fuSdks4RXHI3ljc4lU8VQUgBAYX](https://www.youtube.com/playlist?list=PLTW8p5fuSdks4RXHI3ljc4lU8VQUgBAYX)
+
+Esta playlist complementa os conteúdos de:
+
+* SQL na prática
+* manipulação de dados
+* consultas
+* objetos de banco de dados
+* práticas de laboratório
+
+---
+
+> **Banco de Dados não começa em SELECT. Começa em entender o dado.**
