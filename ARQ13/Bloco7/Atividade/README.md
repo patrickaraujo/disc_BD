@@ -25,7 +25,7 @@ A) `dataautitoria` é `DATETIME` (data + hora); `saldo_antigo`, `valor_transacao
 
 B) `dataautitoria` é `TIMESTAMP` (com fuso horário); `saldo_antigo`, `valor_transacao` e `saldo_novo` são `DOUBLE` por questões de precisão estendida.
 
-C) **`dataautitoria` é `DATE` (apenas data, sem hora); `saldo_antigo`, `valor_transacao` e `saldo_novo` são todos `DECIMAL(9,2)` — tipo de ponto fixo, ideal para valores monetários (precisão exata sem arredondamento binário).** ✅
+C) `dataautitoria` é `DATE` (apenas data, sem hora); `saldo_antigo`, `valor_transacao` e `saldo_novo` são todos `DECIMAL(9,2)` — tipo de ponto fixo, ideal para valores monetários (precisão exata sem arredondamento binário).
 
 D) `dataautitoria` é `VARCHAR(10)` no formato `DD/MM/AAAA`; os campos de saldo são `INT` representando centavos para evitar ponto flutuante.
 
@@ -43,7 +43,7 @@ Em qual evento e timing a Trigger está vinculada?
 
 A) `Event = INSERT`, `Timing = BEFORE` — registra a auditoria antes da inserção da nova conta para garantir trilha completa.
 
-B) **`Event = UPDATE`, `Timing = AFTER` — a Trigger dispara **depois** que o `UPDATE` em `CONTA` foi efetivado, garantindo que apenas alterações **realmente confirmadas** gerem registro de auditoria.** ✅
+B) `Event = UPDATE`, `Timing = AFTER` — a Trigger dispara depois que o `UPDATE` em `CONTA` foi efetivado, garantindo que apenas alterações realmente confirmadas gerem registro de auditoria.
 
 C) `Event = UPDATE`, `Timing = BEFORE` — a Trigger registra a tentativa antes da modificação, permitindo cancelamento se necessário.
 
@@ -63,7 +63,7 @@ Quantas linhas aparecem e por quê?
 
 A) 4 linhas — uma por chamada à SP, independente de sucesso ou falha (a Trigger registra a tentativa de cada operação).
 
-B) **6 linhas. Justificativa: cada chamada bem-sucedida da `sp_transf_bancaria02` executa **2 UPDATEs** (debitar origem + creditar destino), e a Trigger `AFTER UPDATE FOR EACH ROW` dispara **uma vez por linha afetada**. Logo: chamada #1 → 2 linhas; chamada #2 → 2 linhas; chamada #3 → **0 linhas** (falhou na validação, nenhum UPDATE foi executado); chamada #4 → 2 linhas. Total: 2 + 2 + 0 + 2 = 6 linhas.** ✅
+B) 6 linhas. Justificativa: cada chamada bem-sucedida da `sp_transf_bancaria02` executa 2 UPDATEs (debitar origem + creditar destino), e a Trigger `AFTER UPDATE FOR EACH ROW` dispara uma vez por linha afetada. Logo: chamada #1 → 2 linhas; chamada #2 → 2 linhas; chamada #3 → 0 linhas (falhou na validação, nenhum UPDATE foi executado); chamada #4 → 2 linhas. Total: 2 + 2 + 0 + 2 = 6 linhas.
 
 C) 8 linhas — 2 por chamada (todas as 4), pois a chamada #3 também gera registros de auditoria do tipo "tentativa cancelada".
 
@@ -77,7 +77,7 @@ Considere as 6 linhas de `AuditFin` após a bateria, agrupadas por par (linhas 1
 
 A) Não. A soma de cada par é o **valor da transferência** (R\$ 5.000, R\$ 1.600 e R\$ 450,55 respectivamente) — a Trigger registra `OLD.SALDO + NEW.SALDO` em ambas as linhas.
 
-B) **Sim, cada par soma exatamente zero. Para a chamada #1: linha 1 (conta `1111`) tem `valor_transacao = -5000{,}00` (saída) e linha 2 (conta `2222`) tem `valor_transacao = +5000{,}00` (entrada) → soma = 0. Mesma estrutura para os outros pares (`±1600{,}00` e `±450{,}55`). **Princípio físico-contábil:** uma transferência **conserva o dinheiro** — o que sai de um lado entra no outro com sinal oposto. A Trigger calcula `NEW.SALDO - OLD.SALDO`, que é negativo no débito e positivo no crédito — daí a simetria.** ✅
+B) Sim, cada par soma exatamente zero. Para a chamada #1: linha 1 (conta `1111`) tem `valor_transacao = -5000{,}00` (saída) e linha 2 (conta `2222`) tem `valor_transacao = +5000{,}00` (entrada) → soma = 0. Mesma estrutura para os outros pares (`±1600{,}00` e `±450{,}55`). Princípio físico-contábil: uma transferência conserva o dinheiro — o que sai de um lado entra no outro com sinal oposto. A Trigger calcula `NEW.SALDO - OLD.SALDO`, que é negativo no débito e positivo no crédito — daí a simetria.
 
 C) Apenas o primeiro par soma zero; os demais somam o valor da transferência por questão de arredondamento em `DECIMAL(9,2)`.
 
@@ -99,7 +99,7 @@ A) Não — a soma é o total movimentado no banco (R\$ 7.050,55), evidência da
 
 B) Sim, é zero — mas isso é apenas coincidência aritmética; não prova nada além de que valores positivos e negativos estão balanceados localmente.
 
-C) **Sim, é exatamente zero. Como cada par soma zero e há 3 pares (`5000 + 1600 + 450{,}55` em débitos e `5000 + 1600 + 450{,}55` em créditos), a soma global também é zero. Isso prova que **toda transferência registrada foi simétrica** — o dinheiro sempre saiu de algum lugar e chegou a outro. **Nenhuma "fuga" no sistema** — princípio de conservação do dinheiro preservado matematicamente. Em sistema bancário real, esse invariante é a primeira verificação de saúde da contabilidade.** ✅
+C) Sim, é exatamente zero. Como cada par soma zero e há 3 pares (`5000 + 1600 + 450{,}55` em débitos e `5000 + 1600 + 450{,}55` em créditos), a soma global também é zero. Isso prova que toda transferência registrada foi simétrica — o dinheiro sempre saiu de algum lugar e chegou a outro. Nenhuma "fuga" no sistema — princípio de conservação do dinheiro preservado matematicamente. Em sistema bancário real, esse invariante é a primeira verificação de saúde da contabilidade.
 
 D) Sim — mas isso prova apenas que a coluna `valor_transacao` é declarada como `DECIMAL`, não há informação contábil real envolvida.
 
@@ -113,7 +113,7 @@ A) A Trigger registra sempre o saldo médio do dia, calculado como média entre 
 
 B) A Trigger tem um bug que arredonda o saldo antigo para baixo nas auditorias subsequentes a uma falha (a chamada #3 falhou).
 
-C) **Porque a chamada #1 (que aconteceu **antes** da #4) já havia debitado R\$ 5.000 da conta `1111`. Quando a #4 começou, o saldo vigente de `1111` era `10000 - 5000 = 5000`. A Trigger registra o `OLD.SALDO` **no exato momento em que o UPDATE ocorre** — não o saldo histórico inicial. A trilha de auditoria reflete o **estado real** da conta a cada operação, encadeando-se ao longo do tempo.** ✅
+C) Porque a chamada #1 (que aconteceu antes da #4) já havia debitado R\$ 5.000 da conta `1111`. Quando a #4 começou, o saldo vigente de `1111` era `10000 - 5000 = 5000`. A Trigger registra o `OLD.SALDO` no exato momento em que o UPDATE ocorre — não o saldo histórico inicial. A trilha de auditoria reflete o estado real da conta a cada operação, encadeando-se ao longo do tempo.
 
 D) Porque a chamada #3, que falhou, ainda assim debitou R\$ 5.000 da conta `1111` antes de ser revertida — efeito colateral do `CONTINUE HANDLER` da v2.
 
@@ -132,7 +132,7 @@ Os resultados são iguais a `0{,}3`? Qual é a importância dessa diferença em 
 
 A) Ambos retornam exatamente `0{,}3` — o MySQL 8 implementa aritmética exata para constantes literais em qualquer tipo numérico.
 
-B) **Não. `0.1 + 0.2` em ponto flutuante (FLOAT/DOUBLE) retorna `0{,}30000000000000004` (ou valor similar — depende da plataforma) devido à representação binária IEEE 754, que não consegue expressar `0{,}1` e `0{,}2` exatamente. Em DECIMAL (ponto fixo) retorna exatamente `0{,}30`. Em finanças, **mesmo um centavo de erro não é aceitável** — clientes, contadores e fiscalização exigem cálculo exato. Erros se acumulam em milhares de operações; uma diferença de R\$ 0,000001 por transação vira reais ao final do mês. `DECIMAL` é o tipo **obrigatório** em colunas monetárias.** ✅
+B) Não. `0.1 + 0.2` em ponto flutuante (FLOAT/DOUBLE) retorna `0{,}30000000000000004` (ou valor similar — depende da plataforma) devido à representação binária IEEE 754, que não consegue expressar `0{,}1` e `0{,}2` exatamente. Em DECIMAL (ponto fixo) retorna exatamente `0{,}30`. Em finanças, mesmo um centavo de erro não é aceitável — clientes, contadores e fiscalização exigem cálculo exato. Erros se acumulam em milhares de operações; uma diferença de R\$ 0,000001 por transação vira reais ao final do mês. `DECIMAL` é o tipo obrigatório em colunas monetárias.
 
 C) `FLOAT` retorna `0{,}30` e `DECIMAL` retorna `0{,}300000` — a diferença é apenas de exibição, não de armazenamento.
 
@@ -146,7 +146,7 @@ Suponha que a coluna `saldo` da tabela `Conta` fosse alterada de `FLOAT` para `D
 
 A) Seria necessário recriar a Trigger — o MySQL bloqueia automaticamente Triggers que referenciam colunas com tipo alterado, exigindo `DROP TRIGGER` + `CREATE TRIGGER` novo.
 
-B) **A Trigger continuaria funcionando sem necessidade de recriação. O MySQL faz conversão implícita entre `FLOAT` e `DECIMAL` em operações aritméticas (como `NEW.SALDO - OLD.SALDO`). Pelo contrário, a precisão da auditoria poderia até **melhorar** se a fonte (`Conta.saldo`) fosse `DECIMAL` em vez de `FLOAT`, eliminando o erro de arredondamento na origem dos dados antes de chegar à coluna `valor_transacao DECIMAL(9,2)`.** ✅
+B) A Trigger continuaria funcionando sem necessidade de recriação. O MySQL faz conversão implícita entre `FLOAT` e `DECIMAL` em operações aritméticas (como `NEW.SALDO - OLD.SALDO`). Pelo contrário, a precisão da auditoria poderia até melhorar se a fonte (`Conta.saldo`) fosse `DECIMAL` em vez de `FLOAT`, eliminando o erro de arredondamento na origem dos dados antes de chegar à coluna `valor_transacao DECIMAL(9,2)`.
 
 C) A Trigger continuaria funcionando, mas com perda de precisão — `FLOAT` para `DECIMAL` envolve truncamento que pode acumular erros em transações de alto valor.
 
@@ -162,7 +162,7 @@ A) Não haveria diferença prática — `BEFORE` e `AFTER` são equivalentes em 
 
 B) Com `BEFORE UPDATE`, a Trigger nem teria acesso a `NEW.SALDO`, pois o valor proposto só estaria disponível após o UPDATE. A auditoria ficaria incompleta, registrando apenas `OLD.SALDO`.
 
-C) **Com `BEFORE UPDATE`, a Trigger executaria **antes** do UPDATE modificar a linha. `OLD.SALDO` ainda seria o saldo atual, mas `NEW.SALDO` seria o **valor proposto** — não confirmado. Se o UPDATE falhasse depois (violação de constraint, deadlock, falha de I/O), o registro de auditoria já teria sido inserido — registrando uma alteração que **não aconteceu**. Dentro da SP, o `ROLLBACK` desfaria o INSERT em `AuditFin` (atomicidade da transação), mas em código fora de transação, o registro ficaria órfão. **`AFTER UPDATE` é a escolha correta** para garantir que só o que efetivamente aconteceu seja registrado.** ✅
+C) Com `BEFORE UPDATE`, a Trigger executaria antes do UPDATE modificar a linha. `OLD.SALDO` ainda seria o saldo atual, mas `NEW.SALDO` seria o valor proposto — não confirmado. Se o UPDATE falhasse depois (violação de constraint, deadlock, falha de I/O), o registro de auditoria já teria sido inserido — registrando uma alteração que não aconteceu. Dentro da SP, o `ROLLBACK` desfaria o INSERT em `AuditFin` (atomicidade da transação), mas em código fora de transação, o registro ficaria órfão. `AFTER UPDATE` é a escolha correta para garantir que só o que efetivamente aconteceu seja registrado.
 
 D) Com `BEFORE UPDATE`, a Trigger entraria em loop infinito ao tentar acessar `NEW.SALDO`, pois a referência cíclica entre Trigger e UPDATE não permitiria a leitura do valor proposto.
 
@@ -176,7 +176,7 @@ A) `(saldo_antigo - saldo_novo)` — a convenção contábil do MySQL exige que 
 
 B) `ABS(saldo_novo - saldo_antigo)` — o valor absoluto preserva a magnitude, e o sinal pode ser inferido pelo contexto.
 
-C) **`(saldo_novo - saldo_antigo) AS valor_transacao` — o cálculo é o mesmo que a Trigger faria internamente, mas executado sob demanda. Em SQL: `SELECT idAuditoria, conta, (saldo_novo - saldo_antigo) AS valor_transacao FROM AuditFin;`. Saldo aumentou (entrada) → valor positivo; saldo diminuiu (saída) → valor negativo, mantendo a simetria do princípio de conservação.** ✅
+C) `(saldo_novo - saldo_antigo) AS valor_transacao` — o cálculo é o mesmo que a Trigger faria internamente, mas executado sob demanda. Em SQL: `SELECT idAuditoria, conta, (saldo_novo - saldo_antigo) AS valor_transacao FROM AuditFin;`. Saldo aumentou (entrada) → valor positivo; saldo diminuiu (saída) → valor negativo, mantendo a simetria do princípio de conservação.
 
 D) `(saldo_novo + saldo_antigo) / 2` — média móvel é o cálculo padrão para reconstruir o valor de transação a partir de saldos.
 
@@ -188,7 +188,7 @@ Quais são as **vantagens práticas** de calcular `valor_transacao` **na Trigger
 
 A) Nenhuma vantagem prática — calcular na Trigger é apenas redundância; a consulta sob demanda é igualmente eficiente em qualquer cenário.
 
-B) **Quatro vantagens: (1) **Performance** — o cálculo já está feito; relatórios e dashboards são mais rápidos. (2) **Indexabilidade** — pode-se criar índice em `valor_transacao` (`CREATE INDEX idx_valor ON AuditFin(valor_transacao)`), mas índice em expressão calculada exige `GENERATED COLUMN` ou suporte a "functional indexes". (3) **Filtros legíveis e rápidos** — `WHERE valor_transacao < 0` (saídas) é mais claro e mais rápido que `WHERE saldo_novo < saldo_antigo`. (4) **Imutabilidade do passado** — o valor registrado no momento da operação não muda mesmo se o cálculo lógico mudar no futuro (proteção contra "reescrita histórica").** ✅
+B) Quatro vantagens: (1) Performance — o cálculo já está feito; relatórios e dashboards são mais rápidos. (2) Indexabilidade — pode-se criar índice em `valor_transacao` (`CREATE INDEX idx_valor ON AuditFin(valor_transacao)`), mas índice em expressão calculada exige `GENERATED COLUMN` ou suporte a "functional indexes". (3) Filtros legíveis e rápidos — `WHERE valor_transacao < 0` (saídas) é mais claro e mais rápido que `WHERE saldo_novo < saldo_antigo`. (4) Imutabilidade do passado — o valor registrado no momento da operação não muda mesmo se o cálculo lógico mudar no futuro (proteção contra "reescrita histórica").
 
 C) Apenas uma vantagem: economiza espaço em disco, pois `DECIMAL(9,2)` ocupa menos espaço que duas colunas de saldo.
 
@@ -204,6 +204,6 @@ A) Cobriria todos os cenários sem novos riscos — Triggers compostas são equi
 
 B) Cobriria os mesmos cenários da Trigger atual — `INSERT` e `DELETE` em `Conta` são bloqueados pelo MySQL quando há FKs ativas, então a Trigger composta seria redundante.
 
-C) Cenários adicionais cobertos: (a) `INSERT` em `Conta` registraria a criação de novas contas (saldo inicial); (b) `DELETE` em `Conta` registraria a remoção. Novos riscos: (1) Em `INSERT`, **`OLD.SALDO` não existe** — referenciá-lo gera erro; é preciso tratamento especial (`IF OLD.NROCONTA IS NULL` ou separação por `INSERTING`/`UPDATING`/`DELETING` em outros SGBDs; no MySQL, exige Triggers separadas). (2) Em `DELETE`, **`NEW.SALDO` não existe** — mesma observação. (3) A Trigger ficaria **mais complexa**, com mais ramificações condicionais. **Em geral, é melhor ter 3 Triggers separadas** (uma para cada evento), cada uma especializada em seu contexto — mais legível e mais fácil de manter.
+C) Cenários adicionais cobertos: (a) `INSERT` em `Conta` registraria a criação de novas contas (saldo inicial); (b) `DELETE` em `Conta` registraria a remoção. Novos riscos: (1) Em `INSERT`, `OLD.SALDO` não existe — referenciá-lo gera erro; é preciso tratamento especial (`IF OLD.NROCONTA IS NULL` ou separação por `INSERTING`/`UPDATING`/`DELETING` em outros SGBDs; no MySQL, exige Triggers separadas). (2) Em `DELETE`, `NEW.SALDO` não existe — mesma observação. (3) A Trigger ficaria mais complexa, com mais ramificações condicionais. Em geral, é melhor ter 3 Triggers separadas (uma para cada evento), cada uma especializada em seu contexto — mais legível e mais fácil de manter.
 
 D) Cobriria os cenários, mas o MySQL não suporta Triggers múltiplas em uma única declaração (`INSERT, UPDATE, DELETE`) — exigiria criar 3 Triggers separadas, mas com nomes obrigatoriamente prefixados por `tg_multi_`.
