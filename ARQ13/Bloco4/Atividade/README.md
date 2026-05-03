@@ -22,7 +22,7 @@ Qual mensagem é retornada e quais são os saldos finais das contas envolvidas?
 
 A) Mensagem `'ATENÇÃO: Parâmetros inadequados, transação cancelada!!!'` — saldos não alterados, pois a chamada não passa pelo IF de nível 1.
 
-B) **Mensagem `'Contas alteradas com sucesso:'` + 3 colunas (`RESULTADO`, `NOVO SALDO ORIGEM = 5000`, `NOVO SALDO DESTINO = 5000`). Os 3 níveis de IF aprovam (parâmetros não-NULL → saldo `10000 >= 5000` → ambos UPDATEs sem erro), e o `COMMIT` consolida o débito de R\$ 5.000 da conta `1111` e o crédito equivalente na conta `2222`.** ✅
+B) Mensagem `'Contas alteradas com sucesso:'` + 3 colunas (`RESULTADO`, `NOVO SALDO ORIGEM = 5000`, `NOVO SALDO DESTINO = 5000`). Os 3 níveis de IF aprovam (parâmetros não-NULL → saldo `10000 >= 5000` → ambos UPDATEs sem erro), e o `COMMIT` consolida o débito de R\$ 5.000 da conta `1111` e o crédito equivalente na conta `2222`.
 
 C) Mensagem `'ATENÇÃO: Saldo Insuficiente, transação cancelada!!!'` — saldos não alterados, pois `10000 < 5000` retorna FALSE devido à comparação ser feita entre `FLOAT` e `INT`.
 
@@ -44,7 +44,7 @@ A) Mensagem `'ATENÇÃO: Saldo Insuficiente...'` — a SP confunde o saldo da co
 
 B) Mensagem `'ATENÇÃO: Parâmetros inadequados...'` — o valor `1600` é interpretado como sub-múltiplo de saldo e cai no caminho de parâmetro inválido.
 
-C) **Mensagem `'Contas alteradas com sucesso:'` — saldo final de `5555` = `8400` (`10000 - 1600`); saldo final de `6666` = `2600` (`1000 + 1600`). Caminho de sucesso da SP, sem qualquer interação com as contas alteradas pela chamada anterior, pois cada chamada captura `@saldo_origem` independentemente.** ✅
+C) Mensagem `'Contas alteradas com sucesso:'` — saldo final de `5555` = `8400` (`10000 - 1600`); saldo final de `6666` = `2600` (`1000 + 1600`). Caminho de sucesso da SP, sem qualquer interação com as contas alteradas pela chamada anterior, pois cada chamada captura `@saldo_origem` independentemente.
 
 D) Mensagem `'ATENÇÃO: Erro na transação...'` — o servidor disparou `ROLLBACK` automaticamente porque há uma transação ativa da chamada anterior que precisa ser fechada antes.
 
@@ -62,7 +62,7 @@ Qual mensagem é retornada e quais são os saldos finais?
 
 A) Mensagem `'Contas alteradas com sucesso:'` — o saldo de `1111` cai para `-2000` (negativo permitido em conta corrente).
 
-B) **Mensagem `'ATENÇÃO: Saldo Insuficiente, transação cancelada!!!'` — após a chamada #1, a conta `1111` tem apenas R\$ 5.000, e a comparação `@saldo_origem >= v_valor` (`5000 >= 7000`) retorna FALSE. A SP cai no `ELSE` do IF de nível 2 antes mesmo de abrir a transação, e nenhum UPDATE é executado. Saldos permanecem: `1111 = 5000`, `2222 = 5000`.** ✅
+B) Mensagem `'ATENÇÃO: Saldo Insuficiente, transação cancelada!!!'` — após a chamada #1, a conta `1111` tem apenas R\$ 5.000, e a comparação `@saldo_origem >= v_valor` (`5000 >= 7000`) retorna FALSE. A SP cai no `ELSE` do IF de nível 2 antes mesmo de abrir a transação, e nenhum UPDATE é executado. Saldos permanecem: `1111 = 5000`, `2222 = 5000`.
 
 C) Mensagem `'ATENÇÃO: Erro na transação, Contas não alteradas!!!'` — o UPDATE tenta reduzir abaixo de zero, dispara `SQLEXCEPTION`, o handler captura, `erro_sql = TRUE` e o `ROLLBACK` é executado.
 
@@ -84,7 +84,7 @@ A) Mensagem `'Contas alteradas com sucesso:'` — o `NULL` é tratado como conta
 
 B) Mensagem `'ATENÇÃO: Saldo Insuficiente...'` — a conta `1111` tem `5000` e suporta o débito, mas o crédito ao `NULL` falha e a SP confunde com saldo insuficiente.
 
-C) **Mensagem `'ATENÇÃO: Parâmetros inadequados, transação cancelada!!!'` — o IF de nível 1 valida `v_origem IS NOT NULL AND v_destino IS NOT NULL`. Como `v_destino = NULL`, a expressão é UNKNOWN (que `IF` trata como FALSE) e a SP cai no `ELSE` externo, sem nem mesmo capturar `@saldo_origem`. Nenhum UPDATE é executado; saldos permanecem inalterados.** ✅
+C) Mensagem `'ATENÇÃO: Parâmetros inadequados, transação cancelada!!!'` — o IF de nível 1 valida `v_origem IS NOT NULL AND v_destino IS NOT NULL`. Como `v_destino = NULL`, a expressão é UNKNOWN (que `IF` trata como FALSE) e a SP cai no `ELSE` externo, sem nem mesmo capturar `@saldo_origem`. Nenhum UPDATE é executado; saldos permanecem inalterados.
 
 D) Erro de sintaxe na chamada — o MySQL exige um valor não-NULL para parâmetros declarados sem `DEFAULT NULL` na assinatura da SP.
 
@@ -100,7 +100,7 @@ SELECT * FROM Conta;
 
 Qual é o estado final esperado das 4 contas?
 
-A) **`1111 = 5000` (debitada pela #1), `2222 = 5000` (creditada pela #1), `5555 = 8400` (debitada pela #2), `6666 = 2600` (creditada pela #2). As chamadas #3 e #4 falharam **antes** de qualquer UPDATE ser executado (foram interceptadas pelos IFs de validação), então não deixaram efeito em `Conta`.** ✅
+A) `1111 = 5000` (debitada pela #1), `2222 = 5000` (creditada pela #1), `5555 = 8400` (debitada pela #2), `6666 = 2600` (creditada pela #2). As chamadas #3 e #4 falharam antes de qualquer UPDATE ser executado (foram interceptadas pelos IFs de validação), então não deixaram efeito em `Conta`.
 
 B) Os saldos iniciais permanecem inalterados em todas as contas — todas as chamadas falharam por bugs latentes na SP.
 
@@ -116,7 +116,7 @@ Considerando a estrutura `IF` aninhada de 3 níveis em `sp_transf_bancaria`, qua
 
 A) Apenas 2 mensagens: `'sucesso'` e `'falha'` — cada IF apenas redireciona para uma das duas saídas finais.
 
-B) **4 mensagens, cada uma associada a um caminho distinto: (1) `'Contas alteradas com sucesso:'` + 3 colunas (caminho do sucesso, com `COMMIT`); (2) `'ATENÇÃO: Erro na transação, Contas não alteradas!!!'` (transação aberta mas erro de SQL → `ROLLBACK`); (3) `'ATENÇÃO: Saldo Insuficiente, transação cancelada!!!'` (saldo da origem insuficiente → nem abre transação); (4) `'ATENÇÃO: Parâmetros inadequados, transação cancelada!!!'` (origem ou destino NULL → nem chega ao IF de saldo).** ✅
+B) 4 mensagens, cada uma associada a um caminho distinto: (1) `'Contas alteradas com sucesso:'` + 3 colunas (caminho do sucesso, com `COMMIT`); (2) `'ATENÇÃO: Erro na transação, Contas não alteradas!!!'` (transação aberta mas erro de SQL → `ROLLBACK`); (3) `'ATENÇÃO: Saldo Insuficiente, transação cancelada!!!'` (saldo da origem insuficiente → nem abre transação); (4) `'ATENÇÃO: Parâmetros inadequados, transação cancelada!!!'` (origem ou destino NULL → nem chega ao IF de saldo).
 
 C) 3 mensagens — não há caminho separado para "parâmetros inadequados", pois o MySQL bloqueia automaticamente parâmetros NULL antes de a SP ser executada.
 
@@ -132,7 +132,7 @@ A) Porque dentro de uma transação não é possível usar variáveis de sessão
 
 B) Porque o `SELECT` precisa ser executado em modo `READ UNCOMMITTED` para conseguir ler o saldo, e `START TRANSACTION` ativa `READ COMMITTED` por padrão.
 
-C) **Para evitar abrir transação desnecessariamente. Se o saldo fosse capturado dentro de uma transação aberta, mas a validação `@saldo_origem >= v_valor` falhasse depois, teríamos uma transação aberta sem nada para fazer — desperdício de locks/recursos e fonte de bugs (ex.: esquecer de fechar com `ROLLBACK` em algum caminho do `ELSE`). Capturar antes mantém o `START TRANSACTION` apenas onde realmente é necessário.** ✅
+C) Para evitar abrir transação desnecessariamente. Se o saldo fosse capturado dentro de uma transação aberta, mas a validação `@saldo_origem >= v_valor` falhasse depois, teríamos uma transação aberta sem nada para fazer — desperdício de locks/recursos e fonte de bugs (ex.: esquecer de fechar com `ROLLBACK` em algum caminho do `ELSE`). Capturar antes mantém o `START TRANSACTION` apenas onde realmente é necessário.
 
 D) Porque o `SELECT` em variáveis de sessão é executado pelo servidor antes de qualquer transação, independentemente de onde for declarado no corpo da SP.
 
@@ -142,7 +142,7 @@ D) Porque o `SELECT` em variáveis de sessão é executado pelo servidor antes d
 
 Para cada uma das 4 chamadas do roteiro, qual é o estado de `@saldo_origem`, dos dois IFs externos e da decisão de iniciar transação?
 
-A) **(1) `@saldo_origem = 10000`; IF nível 1 = TRUE; IF nível 2 = TRUE (`10000 >= 5000`); transação iniciada. (2) `@saldo_origem = 10000` (5555 não foi tocado); IF nível 1 = TRUE; IF nível 2 = TRUE (`10000 >= 1600`); transação iniciada. (3) `@saldo_origem = 5000` (1111 já foi debitada pela #1); IF nível 1 = TRUE; IF nível 2 = FALSE (`5000 < 7000`); transação NÃO iniciada. (4) A SP nem chega ao SELECT — o IF nível 1 já retorna FALSE devido a `v_destino = NULL`; transação NÃO iniciada.** ✅
+A) (1) `@saldo_origem = 10000`; IF nível 1 = TRUE; IF nível 2 = TRUE (`10000 >= 5000`); transação iniciada. (2) `@saldo_origem = 10000` (5555 não foi tocado); IF nível 1 = TRUE; IF nível 2 = TRUE (`10000 >= 1600`); transação iniciada. (3) `@saldo_origem = 5000` (1111 já foi debitada pela #1); IF nível 1 = TRUE; IF nível 2 = FALSE (`5000 < 7000`); transação NÃO iniciada. (4) A SP nem chega ao SELECT — o IF nível 1 já retorna FALSE devido a `v_destino = NULL`; transação NÃO iniciada.
 
 B) Em todas as chamadas, `@saldo_origem = 10000` (saldo inicial), pois o `SELECT` sempre lê o estado pré-transação registrado em snapshot fixo.
 
@@ -158,7 +158,7 @@ Por que a mensagem de sucesso da `sp_transf_bancaria` retorna **3 colunas** (`RE
 
 A) Porque o MySQL exige sintaticamente que `SELECT` em SPs de UPDATE retorne pelo menos 3 colunas para que o resultado seja exibido no Workbench.
 
-B) **Em uma SP de operação financeira, o usuário precisa de prova imediata do estado pós-operação. Mostrar `RESULTADO` + `NOVO SALDO ORIGEM` + `NOVO SALDO DESTINO` elimina a necessidade de fazer SELECT separado para confirmar a operação, e ainda permite que o app móvel/web exiba imediatamente "Você tinha R\$ X, agora tem R\$ Y" — UX mais clara e auditoria visual imediata.** ✅
+B) Em uma SP de operação financeira, o usuário precisa de prova imediata do estado pós-operação. Mostrar `RESULTADO` + `NOVO SALDO ORIGEM` + `NOVO SALDO DESTINO` elimina a necessidade de fazer SELECT separado para confirmar a operação, e ainda permite que o app móvel/web exiba imediatamente "Você tinha R\$ X, agora tem R\$ Y" — UX mais clara e auditoria visual imediata.
 
 C) Por consistência estrita com a `sp_altera_livros` da ARQ12; é apenas convenção pedagógica do professor sem ganho prático real.
 
@@ -174,7 +174,7 @@ A) Permanece debitada — apenas o segundo UPDATE foi desfeito; o primeiro UPDAT
 
 B) Não é afetada pelo erro — UPDATEs em SPs são autocommit-ados linha por linha em todas as engines do MySQL 8.
 
-C) **É desfeita pelo `ROLLBACK`. Como ambos os UPDATEs estão dentro do `START TRANSACTION` e o `CONTINUE HANDLER FOR SQLEXCEPTION` está ativo, qualquer erro é capturado, `erro_sql` vira `TRUE`, e o `IF` final dispara `ROLLBACK`. O UPDATE da origem é desfeito junto com o tentado UPDATE do destino — atomicidade preservada. Esse é o ponto central de "transação".** ✅
+C) É desfeita pelo `ROLLBACK`. Como ambos os UPDATEs estão dentro do `START TRANSACTION` e o `CONTINUE HANDLER FOR SQLEXCEPTION` está ativo, qualquer erro é capturado, `erro_sql` vira `TRUE`, e o `IF` final dispara `ROLLBACK`. O UPDATE da origem é desfeito junto com o tentado UPDATE do destino — atomicidade preservada. Esse é o ponto central de "transação".
 
 D) Permanece debitada, e o sistema exibe um aviso ao usuário pedindo que execute manualmente um UPDATE compensatório para restaurar o saldo da origem.
 
@@ -186,7 +186,7 @@ Por que `@saldo_destino` é inicializada com `0` no início da SP, e depois reat
 
 A) Porque o MySQL exige inicialização explícita de qualquer variável de sessão antes do uso, sob pena de erro de sintaxe na criação da SP.
 
-B) **A inicialização (`= 0`) garante que a variável **existe** desde o começo da SP, evitando referência a variável não inicializada caso algum caminho exótico chegue à mensagem de sucesso. A reatribuição **depois** do `COMMIT` é necessária porque os valores em `@saldo_origem` (capturado antes dos UPDATEs) e `@saldo_destino` (= `0`) **não refletem** mais o estado atual após os UPDATEs — é preciso reler do banco com novo `SELECT` para que a mensagem de sucesso exiba os saldos efetivamente atualizados.** ✅
+B) A inicialização (`= 0`) garante que a variável existe desde o começo da SP, evitando referência a variável não inicializada caso algum caminho exótico chegue à mensagem de sucesso. A reatribuição depois do `COMMIT` é necessária porque os valores em `@saldo_origem` (capturado antes dos UPDATEs) e `@saldo_destino` (= `0`) não refletem mais o estado atual após os UPDATEs — é preciso reler do banco com novo `SELECT` para que a mensagem de sucesso exiba os saldos efetivamente atualizados.
 
 C) Porque variáveis de sessão começam com `NULL` por padrão, e `NULL` em operações aritméticas resulta em `NULL` — a inicialização com `0` evita comportamento UNKNOWN nas comparações que vêm depois.
 
@@ -198,7 +198,7 @@ D) Porque a variável `@saldo_destino` é compartilhada entre todas as sessões 
 
 Em qual situação a captura `SET @saldo_origem = (SELECT saldo FROM Conta WHERE NroConta = v_origem);` resulta em **`NULL`**? E o que acontece com a comparação `@saldo_origem >= v_valor` quando um dos lados é `NULL`?
 
-A) **Quando `v_origem` aponta para uma conta inexistente (`NroConta` sem correspondência em `Conta`), o `SELECT` retorna 0 linhas e a variável recebe `NULL`. Comparações com `NULL` em SQL retornam UNKNOWN (não TRUE nem FALSE — **lógica de 3 valores**). Em um `IF`, UNKNOWN é tratado como falso. Então a comparação `NULL >= v_valor` cai no `ELSE` do IF de saldo, e a SP retorna `'Saldo Insuficiente'` — uma mensagem **enganosa**, já que o problema real é "conta não existe". Esse é o bug latente que o Bloco 5 vai explorar em detalhes.** ✅
+A) Quando `v_origem` aponta para uma conta inexistente (`NroConta` sem correspondência em `Conta`), o `SELECT` retorna 0 linhas e a variável recebe `NULL`. Comparações com `NULL` em SQL retornam UNKNOWN (não TRUE nem FALSE — lógica de 3 valores). Em um `IF`, UNKNOWN é tratado como falso. Então a comparação `NULL >= v_valor` cai no `ELSE` do IF de saldo, e a SP retorna `'Saldo Insuficiente'` — uma mensagem enganosa, já que o problema real é "conta não existe". Esse é o bug latente que o Bloco 5 vai explorar em detalhes.
 
 B) Apenas quando o servidor MySQL está com `STRICT_TRANS_TABLES` desativado; com a flag ativa, o `SELECT` lança erro em vez de retornar `NULL`.
 
@@ -218,7 +218,7 @@ B) Mensagem `'ATENÇÃO: Conta de origem inexistente, transação cancelada!!!'`
 
 C) Mensagem `'ATENÇÃO: Erro na transação, Contas não alteradas!!!'` — o `CONTINUE HANDLER` captura uma violação implícita de FK e dispara `ROLLBACK`. Saldos inalterados.
 
-D) **Mensagem `'ATENÇÃO: Saldo Insuficiente, transação cancelada!!!'` — **DIAGNÓSTICO ERRADO**. A conta `9999` não existe, mas a mensagem culpa o saldo. Isso ocorre porque `(SELECT saldo FROM Conta WHERE NroConta = 9999)` retorna 0 linhas → `@saldo_origem = NULL` → a comparação `NULL >= 100` é UNKNOWN, tratada como FALSE → cai no `ELSE` do IF de saldo. Saldos: inalterados (nada foi modificado), mas o usuário recebe uma informação **enganosa** sobre o motivo real da falha.** ✅
+D) Mensagem `'ATENÇÃO: Saldo Insuficiente, transação cancelada!!!'` — DIAGNÓSTICO ERRADO. A conta `9999` não existe, mas a mensagem culpa o saldo. Isso ocorre porque `(SELECT saldo FROM Conta WHERE NroConta = 9999)` retorna 0 linhas → `@saldo_origem = NULL` → a comparação `NULL >= 100` é UNKNOWN, tratada como FALSE → cai no `ELSE` do IF de saldo. Saldos: inalterados (nada foi modificado), mas o usuário recebe uma informação enganosa sobre o motivo real da falha.
 
 ---
 
@@ -232,4 +232,4 @@ B) Mensagem `'ATENÇÃO: Erro na transação, Contas não alteradas!!!'` — o s
 
 C) Erro do MySQL impedindo a chamada antes da execução — `v_destino` precisa apontar para conta válida e o servidor valida o argumento na assinatura da SP. Saldos inalterados.
 
-D) **A SP **retorna sucesso**! Saldo de `1111` antes: `5000`; saldo depois: `4900`. **A conta perdeu R\$ 100 — e o destino não recebeu nada (nem é uma conta que existe).** Em `SELECT * FROM Conta;`, aparecem ainda apenas 4 linhas, mas com `1111` debitada. Os R\$ 100 simplesmente **sumiram**. Isso ocorre porque o `UPDATE Conta SET saldo = saldo + 100 WHERE NroConta = 9999` afeta **0 linhas** — o que NÃO é considerado erro pelo `CONTINUE HANDLER FOR SQLEXCEPTION` (afetar 0 linhas é resultado válido, não exceção). O `erro_sql` permanece `FALSE`, o `COMMIT` é executado e a SP exibe mensagem de sucesso enganosa. **Bug CRÍTICO** que será corrigido no Bloco 6.** ✅
+D) A SP retorna sucesso! Saldo de `1111` antes: `5000`; saldo depois: `4900`. A conta perdeu R\$ 100 — e o destino não recebeu nada (nem é uma conta que existe). Em `SELECT * FROM Conta;`, aparecem ainda apenas 4 linhas, mas com `1111` debitada. Os R\$ 100 simplesmente sumiram. Isso ocorre porque o `UPDATE Conta SET saldo = saldo + 100 WHERE NroConta = 9999` afeta 0 linhas — o que NÃO é considerado erro pelo `CONTINUE HANDLER FOR SQLEXCEPTION` (afetar 0 linhas é resultado válido, não exceção). O `erro_sql` permanece `FALSE`, o `COMMIT` é executado e a SP exibe mensagem de sucesso enganosa. Bug CRÍTICO que será corrigido no Bloco 6.
