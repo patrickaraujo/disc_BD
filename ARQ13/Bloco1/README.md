@@ -21,7 +21,11 @@ Ao final deste bloco, você terá:
 
 O diagrama abaixo descreve o schema `Financeiro`, exatamente como aparece no painel `Diagram` do MySQL Workbench.
 
+Figura 1 — Diagrama Entidade-Relacionamento do Schema Financeiro**
+
 ![Diagrama ER do schema Financeiro](assets/diagrama.png)
+
+*Fonte: Elaborado pelo autor.*
 
 ```
    ┌──────────────────────┐                                       ┌──────────────────────┐
