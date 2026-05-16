@@ -1,189 +1,148 @@
-# Atividade 8 — Resolução Documentada do Exercício Integrador
+# 🧠 Atividade 8 — Resolução Documentada do Exercício Integrador
 
-> **Banco de Questões em formato Microsoft Forms**  
-> Disciplina: Banco de Dados | Aula ARQ12 — Bloco 8 (Exercício Integrador)  
-> Origem: conversão da Atividade 8 (questões 72 a 80) em itens de múltipla escolha.
+> **Duração:** 60 minutos  
+> **Formato:** Individual  
+> **Objetivo:** Documentar passo a passo a sua resolução do exercício integrador, explicando suas escolhas e reflexões finais.
 
-> ⚠️ **Atividade avaliativa.** As questões assumem que o aluno já implementou a resolução do exercício integrador do Bloco 8 (recriação da `tab_audit`, da Trigger `Audita_Livros`, da SP `sp_altera_livros` e bateria de testes).
-
----
-
-## Questão 1
-
-Considere os requisitos do Bloco 8 para a tabela `tab_audit`. Qual `CREATE TABLE` está estruturalmente correto e respeita todos os cuidados pedidos?
-
-A) `tab_audit` com `codigo_Produto INT NOT NULL` — pois `INT` cabe a maioria dos códigos de produto comuns em sistemas de pequeno porte.
-
-B) `tab_audit` com `codigo INT AUTO_INCREMENT PRIMARY KEY`, `usuario CHAR(30) NOT NULL`, `estacao CHAR(30) NOT NULL`, `dataautitoria DATETIME NOT NULL`, `codigo_Produto BIGINT NOT NULL`, `preco_unitario_novo DECIMAL(10,4) NOT NULL` e `preco_unitario_antigo DECIMAL(10,4) NOT NULL`. O cuidado central é declarar `codigo_Produto` como `BIGINT` (não `INT`), pois a tabela auditará o `ISBN` da tabela `LIVROS` (`BIGINT UNSIGNED`, 13 dígitos) — `INT UNSIGNED` não comportaria.
-
-C) `tab_audit` com `codigo_Produto VARCHAR(20)` e `dataauditoria DATETIME` (com correção ortográfica) — `VARCHAR` para flexibilidade futura e correção do nome da coluna.
-
-D) `tab_audit` com `codigo_Produto DECIMAL(13,0)` e `preco_unitario_novo FLOAT` — `DECIMAL` para o ISBN (caber 13 dígitos) e `FLOAT` para preço (mais leve em armazenamento).
+> ⚠️ **Esta atividade é avaliativa.** Resolva o exercício do Bloco 8 antes de responder. Não consulte o gabarito até concluir.
 
 ---
 
-## Questão 2
+## 📋 Parte 1 — Sua Resolução
 
-Por que o nome da coluna `dataautitoria` é mantido com essa grafia exata no Bloco 8, mesmo parecendo ser uma digitação?
+72. Cole, abaixo, o `CREATE TABLE tab_audit (...)` que você executou. Em seguida, descreva quais cuidados você teve ao redigi-lo (especialmente quanto ao tipo de `codigo_Produto`).
 
-A) Porque o MySQL não permite renomear colunas em tabelas que serão usadas por Triggers — só seria possível recriar a tabela.
+73. Cole o `DROP TRIGGER IF EXISTS Audita_Livros;` (se aplicável) seguido do seu `CREATE TRIGGER Audita_Livros … FOR EACH ROW BEGIN … END`. Que pseudo-registros você usou (`OLD` ou `NEW`)? Em quais variáveis de sessão você capturou os valores?
 
-B) Porque o nome aparece exatamente assim no roteiro original do professor (e em qualquer código previamente registrado, como a Trigger criada no Bloco 5). Preservar a grafia garante compatibilidade com o gabarito e com toda referência por nome — "corrigir" para `dataauditoria` quebraria o `INSERT INTO TAB_AUDIT (..., dataautitoria, ...)` da Trigger.
-
-C) Porque "dataautitoria" é um termo técnico do português brasileiro, derivado de "auditoria" e "data", padronizado pela LGPD para colunas de log.
-
-D) Porque o MySQL faz comparação case-insensitive em nomes de colunas; `dataautitoria` e `dataauditoria` são tratados como sinônimos pelo servidor.
-
----
-
-## Questão 3
-
-Por que é recomendado executar `DROP TRIGGER IF EXISTS Audita_Livros;` **antes** do `CREATE TRIGGER Audita_Livros ...` no Bloco 8?
-
-A) Para forçar o servidor a recompilar todas as Triggers do banco e melhorar o desempenho geral.
-
-B) Porque a Trigger `Audita_Livros` foi criada no Bloco 5 e ainda está registrada no banco. Sem o `DROP`, o `CREATE TRIGGER` falharia com erro "Trigger already exists". Como o exercício recriou também a tabela `tab_audit`, é boa prática recriar a Trigger para garantir o vínculo lógico atualizado, mesmo que tecnicamente a referência seja por nome.
-
-C) Porque uma Trigger `AFTER UPDATE` precisa ser apagada e recriada toda vez que `tab_audit` recebe novas linhas, para liberar espaço em cache.
-
-D) Porque o MySQL exige `DROP` explícito antes de qualquer `CREATE` em ambiente de produção, por questão de auditoria de DDL.
+74. Cole o seu `CREATE PROCEDURE sp_altera_livros(...) BEGIN … END`. Especificamente, identifique:
+* Em qual linha aparece o `DECLARE erro_sql`?
+* Em qual linha aparece o handler?
+* Em qual linha aparece o `START TRANSACTION`?
+* Em qual linha está o `IF erro_sql = FALSE THEN COMMIT … ELSE ROLLBACK … END IF`?
 
 ---
 
-## Questão 4
+## 📋 Parte 2 — Bateria de Testes
 
-No corpo da Trigger `Audita_Livros AFTER UPDATE ON LIVROS FOR EACH ROW`, quais pseudo-registros são usados e em quais variáveis de sessão seus valores são capturados?
+75. Liste as chamadas que você fez à SP. Para cada uma, indique:
 
-A) `NEW.ISBN`, `NEW.PRECOLIVRO_OLD` e `NEW.PRECOLIVRO_NEW`, capturados em variáveis locais declaradas com `DECLARE` no início do bloco.
+| Chamada | Comando completo | Resultado esperado | Resultado obtido |
+|---------|------------------|-------------------|------------------|
+| #1 | _____ | _____ | _____ |
+| #2 | _____ | _____ | _____ |
+| #3 | _____ | _____ | _____ |
 
-B) Apenas `OLD.*` para todas as colunas, pois `NEW.*` só está disponível em Triggers `BEFORE`.
+76. Cole o resultado de `SELECT * FROM tab_audit;` ao final da bateria. Quantas linhas aparecem? Confira: **o número de linhas é igual ao número de chamadas bem-sucedidas?**
 
-C) `OLD.ISBN` (capturado em `@ISBN`), `NEW.PRECOLIVRO` (capturado em `@PRECONOVO`) e `OLD.PRECOLIVRO` (capturado em `@PRECOANTIGO`). As variáveis de sessão (prefixo `@`) tornam o código mais legível e são depois usadas no `INSERT INTO TAB_AUDIT (...) VALUES (CURRENT_USER, USER(), CURRENT_DATE, @ISBN, @PRECONOVO, @PRECOANTIGO);`.
-
-D) `OLD` e `NEW` para todas as colunas, capturados em uma única variável `@AUDITORIA` do tipo array associativo.
-
----
-
-## Questão 5
-
-Considere a estrutura interna correta da SP `sp_altera_livros` no Bloco 8. Em que ordem aparecem os elementos `DECLARE erro_sql`, `DECLARE CONTINUE HANDLER`, `START TRANSACTION`, `UPDATE` e `IF erro_sql = FALSE THEN COMMIT ... ELSE ROLLBACK ... END IF`?
-
-A) `START TRANSACTION` primeiro, seguido pelos `DECLARE`s, e o `IF ... END IF` aparece como bloco fora do `BEGIN ... END`.
-
-B) A ordem correta é: (1) `DECLARE erro_sql boolean DEFAULT FALSE;`, (2) `DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET erro_sql = TRUE;`, (3) `START TRANSACTION;`, (4) o `UPDATE LIVROS SET Precolivro = v_PRECOLIVRO WHERE ISBN = v_ISBN;`, e por último (5) o `IF erro_sql = FALSE THEN COMMIT; SELECT '...sucesso...' AS RESULTADO, ISBN, PRECOLIVRO AS 'PREÇO NOVO' FROM LIVROS WHERE ISBN = v_ISBN; ELSE ROLLBACK; SELECT '...falha...' AS RESULTADO; END IF;`.
-
-C) `DECLARE erro_sql`, `START TRANSACTION`, `DECLARE CONTINUE HANDLER`, `UPDATE`, `COMMIT`. O handler vem depois do `START TRANSACTION` para conseguir capturar erros do `UPDATE`.
-
-D) Os elementos podem aparecer em qualquer ordem, desde que estejam dentro do `BEGIN ... END`. O MySQL reorganiza internamente no momento da execução.
+77. Cole o resultado de `SELECT * FROM LIVROS;`. Os preços alterados correspondem exatamente às chamadas bem-sucedidas?
 
 ---
 
-## Questão 6
+## 📋 Parte 3 — Reflexão Final
 
-Por que os `DECLARE`s **precisam** vir antes do `START TRANSACTION` no corpo da SP?
+78. Identifique, no exercício, **três padrões/conceitos** que vieram dos blocos anteriores e que você reconheceu ao implementar:
 
-A) Porque `START TRANSACTION` zera o escopo de variáveis locais — qualquer `DECLARE` posterior seria descartado pelo servidor antes da execução.
+| Padrão / conceito | Veio do Bloco | Como apareceu no Bloco 8 |
+|------------------|---------------|--------------------------|
+| _____ | _____ | _____ |
+| _____ | _____ | _____ |
+| _____ | _____ | _____ |
 
-B) Porque o MySQL impõe uma regra sintática: todas as declarações `DECLARE` devem aparecer no início do `BEGIN ... END`, antes de qualquer instrução executável (inclusive antes do `START TRANSACTION`). Se essa ordem for invertida, o servidor retorna erro de sintaxe na criação da SP — a SP nem chega a ser registrada no banco.
+79. Em uma frase, descreva o que mais te ajudou a resolver o exercício: foi o conhecimento prévio dos conceitos (vindos da aula anterior), foi a prática dos Blocos 1-7, ou foi alguma outra coisa?
 
-C) Porque `DECLARE CONTINUE HANDLER` precisa ser registrado pelo servidor antes de qualquer transação ser aberta, ou ele captura apenas erros pós-`COMMIT`.
-
-D) Não precisa — é apenas convenção estilística adotada pelo professor; tecnicamente a ordem pode variar livremente sem efeito.
-
----
-
-## Questão 7
-
-Considere a bateria de testes do Bloco 8 com as três chamadas a seguir, **executadas em sequência**:
-
-```sql
-CALL sp_altera_livros(9786525223742, 49.90);
-CALL sp_altera_livros(8888888888888, 65.00);
-CALL sp_altera_livros(9999999999999, NULL);
-```
-
-Quais são os resultados esperados?
-
-A) As três chamadas retornam mensagem de sucesso, pois a SP é resiliente a qualquer erro e completa todas as transações abertas.
-
-B) As três falham, pois `NULL` na chamada #3 contamina a sessão e força `ROLLBACK` em todas as transações abertas (mesmo nas anteriores).
-
-C) As chamadas #1 e #2 retornam mensagem de sucesso (3 colunas: `RESULTADO`, `ISBN`, `'PREÇO NOVO'`), confirmando os preços alterados. A chamada #3 falha (1 coluna: `RESULTADO` com texto `'ATENÇÃO: Erro na transação, preço do livro não alterado!!!'`) — o `NULL` viola `NOT NULL` em `LIVROS.Precolivro`, o handler captura, a flag `erro_sql` vira `TRUE` e a SP executa `ROLLBACK`.
-
-D) Apenas a chamada #1 é bem-sucedida; a #2 falha por falta de `COMMIT` explícito após a #1 e a #3 falha por `NULL`.
+80. Imagine que, na próxima aula, sua tarefa seja **adicionar uma Trigger `BEFORE INSERT ON LIVROS`** que valide o `Precolivro` (rejeita valores negativos). Sem implementar, descreva em poucas linhas como você adaptaria o que aprendeu nos Blocos 5 e 6 para essa nova tarefa.
 
 ---
 
-## Questão 8
+## ✅ Gabarito sugestivo (use apenas após tentar!)
 
-Após executar a bateria de testes da questão anterior, executa-se:
+### Parte 1
 
-```sql
-SELECT * FROM tab_audit;
-```
+72. O `CREATE TABLE tab_audit` deve ter:
+* `codigo INT AUTO_INCREMENT PRIMARY KEY`
+* As 6 colunas `usuario`, `estacao`, `dataautitoria`, `codigo_Produto`, `preco_unitario_novo`, `preco_unitario_antigo` com seus tipos.
+* O cuidado central: **`codigo_Produto BIGINT`** (não `INT`), para acomodar `ISBN` de 13 dígitos.
+* Detalhe ortográfico: preservar `dataautitoria` (com a digitação do roteiro do professor).
 
-Quantas linhas aparecem e qual é o conteúdo correto?
+73. A Trigger deve ter:
+* `DROP TRIGGER IF EXISTS Audita_Livros;` (recomendado, para evitar erro se já existir).
+* `CREATE TRIGGER Audita_Livros AFTER UPDATE ON LIVROS FOR EACH ROW BEGIN … END //`.
+* Variáveis de sessão `@ISBN`, `@PRECONOVO`, `@PRECOANTIGO` capturando `OLD.ISBN`, `NEW.PRECOLIVRO`, `OLD.PRECOLIVRO`.
+* `INSERT INTO TAB_AUDIT (...) VALUES (CURRENT_USER, USER(), CURRENT_DATE, @ISBN, @PRECONOVO, @PRECOANTIGO);`.
 
-A) 3 linhas — uma para cada chamada, sendo a da #3 com `preco_unitario_novo = NULL` para indicar a tentativa frustrada.
-
-B) 2 linhas: uma com `codigo_Produto = 9786525223742` (com `preco_unitario_antigo` e `preco_unitario_novo` correspondendo à alteração da #1), e outra com `codigo_Produto = 8888888888888` (correspondendo à #2). A chamada #3 não deixa rastro porque o `UPDATE` falhou (Trigger `AFTER UPDATE` não dispara) e, mesmo se tivesse disparado, o `ROLLBACK` da SP descartaria a inserção de auditoria.
-
-C) 0 linhas — `tab_audit` é zerada automaticamente quando qualquer chamada à SP falha na mesma sessão.
-
-D) 1 linha — apenas a última chamada bem-sucedida deixa rastro; as anteriores são sobrescritas em `tab_audit`.
-
----
-
-## Questão 9
-
-Após a bateria, executa-se `SELECT * FROM LIVROS;`. Como deve estar o estado da tabela?
-
-A) Apenas 2 livros aparecem (os ISBNs alterados) — os demais foram removidos como efeito colateral das chamadas anteriores nos blocos.
-
-B) Os 4 livros aparecem, mas todos com `Precolivro = NULL` por contaminação da chamada #3.
-
-C) Erro — `LIVROS` foi truncada automaticamente quando a chamada #3 falhou.
-
-D) Os 4 livros aparecem: `9786525223742` com `Precolivro = 49{,}90` (alterado pela #1); `8888888888888` com `Precolivro = 65{,}00` (alterado pela #2); `9999999999999` inalterado (a chamada #3 falhou e foi desfeita por `ROLLBACK`); `7777777777777` inalterado (não foi tocado por nenhuma chamada). Apenas as chamadas bem-sucedidas refletem em `LIVROS`; as falhas não deixam rastro.
+74. Estrutura esperada da SP:
+* Linha 1: `DECLARE erro_sql boolean DEFAULT FALSE;` — logo após `BEGIN`.
+* Linha 2: `DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET erro_sql = TRUE;` — logo abaixo.
+* Linha 3 (em branco) — Linha 4: `START TRANSACTION;`.
+* Após o `UPDATE`: `IF erro_sql = FALSE THEN COMMIT; SELECT 'sucesso…' AS RESULTADO, ISBN, PRECOLIVRO AS 'PREÇO NOVO' FROM LIVROS WHERE ISBN = v_ISBN; ELSE ROLLBACK; SELECT 'falha…' AS RESULTADO; END IF;`.
 
 ---
 
-## Questão 10
+### Parte 2
 
-Identifique corretamente **três padrões/conceitos** vindos dos blocos anteriores que foram reusados na resolução do Bloco 8:
+75. Exemplo de bateria correta:
 
-A) Padrões CRUD-RESTful do Bloco 1, normalização Boyce-Codd do Bloco 4 e índices secundários do Bloco 7.
+| Chamada | Comando | Resultado esperado | Resultado obtido |
+|---------|---------|-------------------|------------------|
+| #1 | `CALL sp_altera_livros(9786525223742, 49.90);` | sucesso (3 colunas) | ✅ sucesso |
+| #2 | `CALL sp_altera_livros(8888888888888, 65.00);` | sucesso (3 colunas) | ✅ sucesso |
+| #3 | `CALL sp_altera_livros(9999999999999, NULL);` | falha (`ATENÇÃO…`) | ✅ falha conforme esperado |
 
-B) (1) O trio `DECLARE erro_sql / DECLARE CONTINUE HANDLER FOR SQLEXCEPTION / START TRANSACTION` (vindo do Bloco 3) — usado no início da `sp_altera_livros`. (2) O cabeçalho `FOR EACH ROW BEGIN` em Trigger `AFTER UPDATE` (vindo do Bloco 5) — recriado para `Audita_Livros`. (3) A mensagem de sucesso enriquecida com 3 colunas, incluindo `ISBN` e `'PREÇO NOVO'` via `SELECT ... FROM LIVROS WHERE ISBN = v_ISBN` (vindo do Bloco 6).
+76. **2 linhas** em `tab_audit`, correspondendo às chamadas #1 e #2. Linhas com `codigo_Produto = 9786525223742` (com seus preços antigo e novo) e `codigo_Produto = 8888888888888`.
 
-C) Apenas o `IF ... THEN ... ELSE ... END IF` do Bloco 2 — os demais elementos foram introduzidos pela primeira vez no Bloco 8 e são autênticos da resolução integradora.
+77. Em `LIVROS`:
+* `9786525223742` com `Precolivro = 49.90`.
+* `9999999999999` inalterado (`34.50`).
+* `8888888888888` com `Precolivro = 65.00`.
+* `7777777777777` inalterado (`29.90`).
 
-D) Padrões de criptografia AES, autenticação OAuth2 e replicação master-slave — vindos respectivamente dos blocos 5, 6 e 7.
-
----
-
-## Questão 11
-
-Em uma turma reflexiva, qual frase descreve melhor o que efetivamente permite ao aluno resolver o exercício integrador do Bloco 8 **sem código guia**?
-
-A) A leitura cuidadosa do enunciado do Bloco 8, sem necessidade de envolvimento prático com os blocos anteriores.
-
-B) A consulta direta ao gabarito (`COMANDOS-BD-03-bloco8.sql`) antes de tentar — afinal, o objetivo é entregar a solução correta no menor tempo possível.
-
-C) A prática repetida dos Blocos 1 a 7, que construíram, por reaplicação, os padrões necessários (trio transacional, Trigger `AFTER UPDATE`, mensagem enriquecida etc.). A mera leitura teórica seria insuficiente — é a repetição prática que internaliza o padrão a ponto de o aluno poder reaplicá-lo em um cenário novo, sem rede de proteção.
-
-D) A memorização da sintaxe SQL do MySQL 8 antes de iniciar a aula — o conhecimento prévio dispensa qualquer prática ou repetição.
+(Os valores podem variar conforme as alterações feitas nos Blocos 6 — o ponto é que **as chamadas bem-sucedidas refletem em `LIVROS`** e **as falhas não**.)
 
 ---
 
-## Questão 12
+### Parte 3
 
-Imagine que a próxima tarefa seja adicionar uma Trigger **`BEFORE INSERT ON LIVROS`** que valide `Precolivro` (rejeitando valores negativos). Como você adaptaria o que aprendeu nos Blocos 5 e 6?
+78. Exemplos de padrões reusados:
 
-A) Manteria `AFTER UPDATE` e adicionaria um `IF Precolivro < 0 THEN ROLLBACK` no corpo — Triggers `INSERT` não conseguem validar valores antes da gravação.
+| Padrão | Veio do Bloco | Como apareceu no Bloco 8 |
+|--------|---------------|--------------------------|
+| Trio `DECLARE erro_sql / DECLARE CONTINUE HANDLER / START TRANSACTION` | Bloco 3 | Início do `BEGIN` da `sp_altera_livros` |
+| Cabeçalho `FOR EACH ROW BEGIN` em Trigger AFTER UPDATE | Bloco 5 | Trigger `Audita_Livros` recriada |
+| Mensagem de sucesso enriquecida (3 colunas com `ISBN` e `PREÇO NOVO`) | Bloco 6 | `SELECT … FROM LIVROS WHERE ISBN = v_ISBN` na SP |
+| `IF erro_sql = FALSE THEN COMMIT … ELSE ROLLBACK …` | Blocos 3, 4, 6 | Decisão final de `sp_altera_livros` |
 
-B) Criaria uma SP nova `sp_valida_preco` que faz o `INSERT` apenas após verificar manualmente o sinal do preço — sem usar Trigger nenhuma.
+79. Resposta livre. Espera-se que o aluno reconheça que **o exercício foi possível porque os blocos anteriores construíram, por repetição, os padrões necessários** — e que mera leitura teórica seria insuficiente.
 
-C) Mudaria o tipo da Trigger para `BEFORE INSERT ON LIVROS` (em vez de `AFTER UPDATE`), validaria `NEW.Precolivro` (não há `OLD` em `INSERT`), e se `NEW.Precolivro < 0` sinalizaria erro com `SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Preço inválido';`. Esse `SIGNAL` é capturado pelo `CONTINUE HANDLER FOR SQLEXCEPTION` da SP de inserção — abortando o `INSERT`. O padrão da SP transacional permanece o mesmo do Bloco 3; apenas a Trigger muda, passando a impor uma regra de negócio antes da gravação.
+80. Adaptação esperada:
+* Em vez de `AFTER UPDATE ON LIVROS`, criar **`BEFORE INSERT ON LIVROS`**.
+* Em vez de capturar `OLD`/`NEW`, validar `NEW.Precolivro`.
+* Se `NEW.Precolivro < 0`, sinalizar erro com `SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Preço inválido';` (esse `SIGNAL` será capturado pelo `CONTINUE HANDLER` da SP — abortando o `INSERT`).
+* O **padrão SP transacional** continua o mesmo do Bloco 3 — mudaria apenas a Trigger, que passa a impor uma regra de negócio antes da gravação.
 
-D) Criaria a Trigger como `AFTER INSERT ON LIVROS` e usaria `OLD.Precolivro` para rejeitar valores negativos — `OLD` em `INSERT` retorna o valor padrão (`0`), comparável ao `NEW`.
+---
+
+## 💭 Reflexão Final
+
+Após completar esta atividade, você deve ser capaz de:
+
+✅ Construir, do zero, um sistema completo de auditoria de alterações.  
+✅ Reconhecer padrões reusáveis e aplicá-los em novos cenários.  
+✅ Documentar suas decisões de implementação.  
+✅ Antecipar como adaptar o que aprendeu para próximos desafios.  
+
+> 💡 *"Aprender é entender. Praticar é fixar. Aplicar em algo novo, sem rede, é dominar."*
+
+---
+
+## 🎓 Encerramento da Aula ARQ12
+
+Parabéns! Ao chegar até aqui, você conquistou um conjunto de habilidades raro entre estudantes do mesmo nível:
+
+* Pensar em **transação** antes de pensar em SQL.
+* Construir SP **resilientes a erro** sem precisar de exemplo.
+* Usar **Triggers** para automatizar **rastreabilidade**.
+* Gerenciar **usuários e privilégios** com responsabilidade.
+
+Use bem o que aprendeu. Em produção, são esses cuidados que separam um banco confiável de um arquivo bagunçado.
+
+> 💭 *"O profissional que você será amanhã é construído pela escolha de não pular o exercício de hoje."*
