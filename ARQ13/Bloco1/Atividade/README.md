@@ -1,168 +1,130 @@
-# Atividade 1 — Diagrama e Forward Engineering
+# 🧠 Atividade 1 — Diagrama e Forward Engineering
 
-> **Banco de Questões em formato Microsoft Forms**  
-> Disciplina: Banco de Dados | Aula ARQ13 — Bloco 1  
-> Origem: conversão da Atividade 1 (questões 1 a 10) em itens de múltipla escolha.
+> **Duração:** 20 minutos  
+> **Formato:** Individual  
+> **Objetivo:** Consolidar a leitura do diagrama ER, fixar o efeito dos 3 `SET`s do Forward Engineering e antecipar implicações práticas.
 
 ---
 
-## Questão 1
+## 📋 Parte 1 — Execução
 
-Após executar os 3 `SET`s do Forward Engineering no início do roteiro, executa-se:
+1. Após executar os 3 `SET`s do roteiro, execute:
 
 ```sql
 SELECT @@UNIQUE_CHECKS, @@FOREIGN_KEY_CHECKS, @@SQL_MODE;
 ```
 
-Quais valores são retornados?
+Quais valores você obteve para cada variável? Identifique pelo menos **três flags** dentro de `@@SQL_MODE`.
 
-A) Os três valores retornam `1`, indicando que a sessão está em "modo permissivo" para acelerar a execução do script.
-
-B) `@@UNIQUE_CHECKS = 0`, `@@FOREIGN_KEY_CHECKS = 0` e `@@SQL_MODE` contém múltiplas flags estritas, incluindo (entre outras): `ONLY_FULL_GROUP_BY`, `STRICT_TRANS_TABLES`, `NO_ZERO_IN_DATE`, `NO_ZERO_DATE`, `ERROR_FOR_DIVISION_BY_ZERO` e `NO_ENGINE_SUBSTITUTION`.
-
-C) `@@UNIQUE_CHECKS` e `@@FOREIGN_KEY_CHECKS` retornam `NULL` porque foram redefinidas; apenas `@@SQL_MODE` exibe valor visível.
-
-D) Os três retornam erro de "variável não definida", pois variáveis com `@@` exigem inicialização explícita por sessão antes da leitura.
-
----
-
-## Questão 2
-
-Após executar os 3 `SET`s, executa-se:
+2. Execute também:
 
 ```sql
 SELECT @OLD_UNIQUE_CHECKS, @OLD_FOREIGN_KEY_CHECKS;
 ```
 
-Quais valores são retornados e por que essas variáveis são importantes (mesmo que não sejam restauradas ao final desta aula)?
-
-A) Ambos retornam `0` — os mesmos valores definidos pelos `SET`s, apenas espelhados em outras variáveis para fins decorativos.
-
-B) Em uma instalação padrão do MySQL 8, antes do roteiro `@@UNIQUE_CHECKS` e `@@FOREIGN_KEY_CHECKS` valem `1`, então `@OLD_UNIQUE_CHECKS = 1` e `@OLD_FOREIGN_KEY_CHECKS = 1`. São importantes porque permitem restaurar a sessão ao estado original ao final do script, com `SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;` (e análogos) — devolvendo o ambiente do usuário sem efeitos colaterais persistentes.
-
-C) Ambos retornam `NULL`, pois o MySQL não preserva valores anteriores de variáveis de sistema entre comandos sucessivos.
-
-D) Retornam o nome do schema corrente (`'Financeiro'`), pois `@OLD_*` armazena contexto de schema da última conexão, não valores de flags.
+Os valores retornados são `0`, `1`, `NULL` ou outros? Por que esses valores são importantes (mesmo que você não vá restaurá-los nesta aula)?
 
 ---
 
-## Questão 3
+## 📋 Parte 2 — Diagrama ER
 
-Analise o diagrama ER do schema `Financeiro` (com as entidades `Cliente`, `TipoConta` e `Conta`). Qual alternativa descreve corretamente sua estrutura?
+3. Olhando o diagrama do schema `Financeiro`, indique:
 
-A) 4 tabelas, 4 chaves primárias simples, nenhuma chave primária composta, 3 chaves estrangeiras, e o atributo `FLOAT` está na tabela `Cliente`.
+| Pergunta | Resposta |
+|----------|----------|
+| Quantas tabelas existem? | _____ |
+| Quantas chaves primárias simples (1 coluna) existem? | _____ |
+| Quantas chaves primárias compostas existem? | _____ |
+| Quantas chaves estrangeiras existem? | _____ |
+| Em qual tabela existe um atributo `FLOAT`? | _____ |
 
-B) 3 tabelas (`Cliente`, `TipoConta`, `Conta`); 2 chaves primárias simples (`Cliente.idCliente` e `TipoConta.idTipoConta`); 1 chave primária composta (em `Conta`, formada por `NroConta`, `Cliente_idCliente` e `TipoConta_idTipoConta`); 2 chaves estrangeiras (ambas em `Conta`, uma para `Cliente` e outra para `TipoConta`); e o único atributo `FLOAT` (`saldo`) está em `Conta`.
+4. As cardinalidades das duas relações no diagrama são `1:N`. Reescreva-as em forma de frase, do tipo "Cada __ pode ter __ contas, e cada conta pertence a um único __":
+   * Relação Cliente ↔ Conta:
+   * Relação TipoConta ↔ Conta:
 
-C) 3 tabelas, 3 chaves primárias simples (uma em cada tabela), nenhuma chave primária composta, 4 chaves estrangeiras, e o `FLOAT` está em `TipoConta`.
-
-D) 2 tabelas e 1 view materializada, 2 chaves primárias compostas, 1 chave estrangeira, e o `FLOAT` está em `Cliente.salario`.
-
----
-
-## Questão 4
-
-As cardinalidades das duas relações no diagrama são `1:N`. Qual alternativa descreve corretamente essas relações em forma de frase?
-
-A) Cada cliente tem exatamente uma conta, e cada conta pode ter vários clientes; cada tipo de conta possui uma conta única, e cada conta possui um único tipo. (Cardinalidade `N:1` invertida.)
-
-B) Cada cliente e cada tipo de conta são, simultaneamente, donos das mesmas contas (cardinalidade `N:M`); por isso, as duas relações no diagrama são bidirecionais.
-
-C) Cliente ↔ Conta: "Cada cliente pode ter várias contas, e cada conta pertence a um único cliente". TipoConta ↔ Conta: "Cada tipo de conta pode ser usado por várias contas, e cada conta tem um único tipo de conta".
-
-D) Cada conta tem várias contas-pai e várias contas-filhas, formando uma estrutura recursiva sobre a própria tabela `Conta`.
+5. Por que `idCliente` e `idTipoConta` são **`AUTO_INCREMENT`**, mas `NroConta` **não é**? Pense em quem decide o valor de cada uma na vida real (sistema X usuário humano).
 
 ---
 
-## Questão 5
+## 📋 Parte 3 — Questões Conceituais
 
-Por que `idCliente` (em `Cliente`) e `idTipoConta` (em `TipoConta`) são declarados como `AUTO_INCREMENT`, mas `NroConta` (em `Conta`) **não** é?
+6. Em uma sessão com `FOREIGN_KEY_CHECKS=0`, é possível **criar** uma tabela `Conta` que faz FK para `Cliente` mesmo se `Cliente` ainda não existir? E é possível **inserir uma linha** em `Conta` apontando para um `idCliente` que não está em `Cliente`? Justifique para os dois casos.
 
-A) Porque `NroConta` faz parte de uma PK composta, e `AUTO_INCREMENT` não pode ser aplicado a colunas que participam de chaves primárias compostas no MySQL.
+7. Imagine que durante o desenvolvimento você esqueceu de religar `FOREIGN_KEY_CHECKS=1` ao final do script. Liste **dois riscos práticos** dessa configuração permanecer em `0`.
 
-B) Por inconsistência do roteiro original — todas as três colunas deveriam ser `AUTO_INCREMENT` para garantir unicidade automática em qualquer cenário.
-
-C) Porque `NroConta` é a única coluna de tipo `INT NOT NULL` na tabela; as outras duas são `INT NULL` e, por isso, não podem ser `AUTO_INCREMENT` no MySQL 8.
-
-D) Porque `idCliente` e `idTipoConta` são chaves substitutas ("surrogate keys") — o sistema gera o identificador único, e o valor concreto não tem significado de negócio (o cliente "1" não é especial, é só "o primeiro registrado"). Já `NroConta` é um valor de negócio — o número real da conta no banco, atribuído por regras externas. Não pode ser apenas "o próximo da sequência".
-
----
-
-## Questão 6
-
-Em uma sessão com `FOREIGN_KEY_CHECKS = 0`, considere as duas situações:
-
-**(a)** Criar a tabela `Conta` com FK para `Cliente`, **antes** de `Cliente` existir.  
-**(b)** Inserir uma linha em `Conta` apontando para um `idCliente` que **não existe** em `Cliente`.
-
-Qual alternativa descreve corretamente os dois casos?
-
-A) **(a)** Sim, é possível; **(b)** Não — o `INSERT` é sempre validado contra a FK, mesmo com o flag em `0`.
-
-B) **(a)** Não, o flag não afeta `CREATE TABLE`; **(b)** Sim, o flag afeta apenas `INSERT/UPDATE/DELETE`.
-
-C) **(a)** Sim — com `FOREIGN_KEY_CHECKS = 0`, o MySQL aceita criar `Conta` mesmo que `Cliente` ainda não exista. Sem o flag, o servidor recusa porque a referência aponta para uma tabela inexistente. **(b)** Sim — com o flag em `0`, o `INSERT` é aceito, mas isso deixa o banco em estado inconsistente (filhos órfãos). Quando o flag voltar a `1`, novas operações continuam funcionando, mas a integridade já foi quebrada e as linhas inválidas permanecem.
-
-D) **(a)** Não, é proibido em qualquer configuração; **(b)** Não, é proibido em qualquer configuração — `FOREIGN_KEY_CHECKS` é apenas decorativo no MySQL 8.
-
----
-
-## Questão 7
-
-Imagine que, durante o desenvolvimento, você esqueceu de religar `FOREIGN_KEY_CHECKS = 1` ao final do script. Quais são **dois riscos práticos** dessa configuração permanecer em `0`?
-
-A) **(1)** O servidor reinicia automaticamente após 24 horas para forçar a religagem; **(2)** o schema é exportado silenciosamente para um arquivo CSV externo.
-
-B) **(1)** Dados inconsistentes podem ser inseridos sem que o MySQL reclame, levando a "filhos órfãos" (registros que apontam para pais inexistentes). **(2)** Operações `DELETE`/`UPDATE` que normalmente seriam bloqueadas por `RESTRICT`/`NO ACTION` passam a ser executadas, possivelmente quebrando relacionamentos críticos sem aviso ao usuário.
-
-C) **(1)** Performance de consultas cai em torno de 90% por sobrecarga interna do otimizador; **(2)** o `AUTO_INCREMENT` deixa de funcionar em todas as tabelas do schema.
-
-D) **(1)** O charset do banco muda silenciosamente para `latin1`; **(2)** `SHOW TRIGGERS` para de retornar resultados até que o flag seja religado.
-
----
-
-## Questão 8
-
-A flag `STRICT_TRANS_TABLES` faz parte do `SQL_MODE` definido pelo Workbench. Considere o comando abaixo executado em uma tabela com `NomeCli` declarada como `NOT NULL`:
+8. A flag `STRICT_TRANS_TABLES` faz parte do `SQL_MODE` definido pelo Workbench. Sem ela ativa, o que aconteceria se você executasse:
 
 ```sql
 INSERT INTO Cliente (idCliente, NomeCli) VALUES (1, NULL);
 ```
 
-Como o MySQL se comporta **com** e **sem** essa flag ativa?
+Compare com o comportamento **com** `STRICT_TRANS_TABLES`.
 
-A) Com `STRICT_TRANS_TABLES` ativa, o MySQL aceita silenciosamente o `NULL`; sem ela, retorna erro. (O nome da flag é, na verdade, invertido em relação ao comportamento.)
-
-B) Com ou sem a flag, o MySQL retorna erro — o nome `STRICT_TRANS_TABLES` afeta apenas operações em tabelas **não**-transacionais, como `MyISAM`.
-
-C) Sem `STRICT_TRANS_TABLES`, o `INSERT` com `NomeCli = NULL` em uma coluna `NOT NULL` resultaria apenas em um aviso (warning) e um valor "padrão" silencioso (string vazia ou similar) — comportamento perigoso. Com `STRICT_TRANS_TABLES` ativa, o MySQL rejeita com erro `ER_BAD_NULL_ERROR`. Para sistemas profissionais, queremos sempre o erro.
-
-D) Com a flag, o `INSERT` é aceito, mas registrado em uma "tabela paralela de strict mode"; sem a flag, é descartado completamente sem aviso.
+9. Por que o Workbench **salva os valores antigos** das variáveis (em `@OLD_*`) antes de modificá-las, em vez de simplesmente sobrescrever?
 
 ---
 
-## Questão 9
+## 📋 Parte 4 — Antecipação
 
-Por que o Workbench salva os valores antigos das variáveis em `@OLD_UNIQUE_CHECKS`, `@OLD_FOREIGN_KEY_CHECKS` e `@OLD_SQL_MODE` antes de modificá-las, em vez de simplesmente sobrescrever?
-
-A) Porque o MySQL não permite alteração direta de variáveis de sistema sem antes copiar para variáveis de sessão — é uma exigência sintática do servidor.
-
-B) Para criar um log automático de auditoria de alterações de configuração, exigido por regulações de proteção de dados (como a LGPD).
-
-C) Porque a sessão pode estar sendo usada para outras coisas além desse script. Se simplesmente sobrescrevêssemos os valores, ao final do script a sessão ficaria com os flags do Workbench — possivelmente diferentes do que o usuário tinha antes. O padrão `@OLD_X = @@X` permite rastrear o estado original e, ao final, executar `SET X = @OLD_X` para reverter — devolvendo a sessão ao estado original sem efeitos colaterais.
-
-D) Porque variáveis prefixadas com `@OLD_` são as únicas que persistem entre conexões — assim, os valores sobrevivem a desconexões acidentais durante o Forward Engineering.
+10. Após este bloco, sua sessão tem `FOREIGN_KEY_CHECKS=0`. No Bloco 3, você vai criar a tabela `Conta` com **duas chaves estrangeiras** (para `Cliente` e `TipoConta`). Se o flag estivesse em `1`, em qual situação você teria erro? E qual o efeito prático de tê-lo em `0` durante a criação?
 
 ---
 
-## Questão 10
+## ✅ Gabarito (use apenas após tentar!)
 
-Após o Bloco 1, sua sessão está com `FOREIGN_KEY_CHECKS = 0`. No Bloco 3, você criará a tabela `Conta` com **duas chaves estrangeiras** (para `Cliente` e `TipoConta`). Qual seria o efeito prático se o flag estivesse em `1` durante essa criação?
+### Parte 1
 
-A) Nenhum efeito prático — `FOREIGN_KEY_CHECKS` afeta apenas `INSERT`/`UPDATE`/`DELETE`, nunca `CREATE TABLE`.
+1. `@@UNIQUE_CHECKS = 0`, `@@FOREIGN_KEY_CHECKS = 0`. O `@@SQL_MODE` contém ao menos `ONLY_FULL_GROUP_BY`, `STRICT_TRANS_TABLES`, `NO_ZERO_IN_DATE`, `NO_ZERO_DATE`, `ERROR_FOR_DIVISION_BY_ZERO`, `NO_ENGINE_SUBSTITUTION`.
 
-B) Com `FOREIGN_KEY_CHECKS = 1`, ao criar `Conta` antes que `Cliente` ou `TipoConta` existam, o MySQL retornaria erro do tipo "Cannot resolve table name". A solução tradicional seria criar primeiro `Cliente`, depois `TipoConta`, depois `Conta` — a ordem importa. Com o flag em `0`, a ordem é irrelevante durante a criação. Isso é especialmente útil para scripts gerados automaticamente, que listam tabelas em ordem alfabética ou em ordem do diagrama.
+2. Em uma instalação padrão do MySQL 8, antes do roteiro `@@UNIQUE_CHECKS` e `@@FOREIGN_KEY_CHECKS` valem `1` — então `@OLD_UNIQUE_CHECKS = 1` e `@OLD_FOREIGN_KEY_CHECKS = 1`. São importantes porque, ao final do script, o ideal é **restaurar** com `SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;` etc., devolvendo a sessão ao estado original.
 
-C) O `CREATE TABLE` da `Conta` seria aceito normalmente em qualquer ordem, mas as FKs ficariam com status `INVALID` até `Cliente` ser criada — exigindo `ALTER TABLE` posterior para reativá-las.
+---
 
-D) O Workbench detecta automaticamente o estado do flag e o reverte para `0` em qualquer `CREATE TABLE` com FKs, evitando o erro mesmo se o usuário tiver definido `1` manualmente.
+### Parte 2
+
+3. Tabela:
+
+| Pergunta | Resposta |
+|----------|----------|
+| Quantas tabelas existem? | 3 (`Cliente`, `TipoConta`, `Conta`) |
+| Quantas chaves primárias simples (1 coluna) existem? | 2 (`Cliente.idCliente` e `TipoConta.idTipoConta`) |
+| Quantas chaves primárias compostas existem? | 1 (`Conta` — 3 colunas) |
+| Quantas chaves estrangeiras existem? | 2 (em `Conta`: para `Cliente` e para `TipoConta`) |
+| Em qual tabela existe um atributo `FLOAT`? | `Conta` (`saldo FLOAT`) |
+
+4. * Cliente ↔ Conta: "Cada **cliente** pode ter **várias** contas, e cada **conta** pertence a um único **cliente**".
+* TipoConta ↔ Conta: "Cada **tipo de conta** pode ser usado por **várias** contas, e cada **conta** tem um único **tipo de conta**".
+
+5. **`idCliente` e `idTipoConta` são `AUTO_INCREMENT`** porque são **chaves substitutas** ("surrogate keys") — o sistema precisa de algum identificador único, mas o valor concreto não tem significado de negócio (o cliente "1" não é especial, é só "o primeiro registrado"). Já **`NroConta` é um valor de negócio** (número da conta no banco), atribuído por regras externas — não pode ser apenas "o próximo da sequência".
+
+---
+
+### Parte 3
+
+6. * **Criar a tabela `Conta` antes de `Cliente` existir:** sim, com `FOREIGN_KEY_CHECKS=0`, é possível. Sem o flag, o MySQL recusa porque a referência aponta para uma tabela inexistente.
+* **Inserir linha em `Conta` apontando para `idCliente` inexistente:** sim, com o flag em `0`, é aceito. O risco é deixar o banco em estado **inconsistente** — quando o flag voltar a `1`, novas operações continuam funcionando, mas a integridade já foi quebrada.
+
+7. Riscos: **(1)** dados inconsistentes podem ser inseridos sem o MySQL reclamar, levando a "filhos órfãos" (registros que apontam para pais inexistentes). **(2)** Operações `DELETE`/`UPDATE` que normalmente seriam bloqueadas por `RESTRICT`/`NO ACTION` passam a ser executadas, possivelmente "quebrando" relacionamentos críticos.
+
+8. Sem `STRICT_TRANS_TABLES`, o `INSERT` com `NomeCli = NULL` em uma coluna `NOT NULL` resultaria em **um aviso (warning) e um valor "padrão" silencioso** (string vazia ou similar) — comportamento perigoso. **Com** `STRICT_TRANS_TABLES`, o MySQL **rejeita** com erro `ER_BAD_NULL_ERROR`. Para sistemas profissionais, queremos sempre o erro.
+
+9. Porque a sessão pode estar sendo usada para outras coisas além desse script. Se simplesmente sobrescrevêssemos os valores, ao final do script a sessão ficaria com os flags do Workbench — possivelmente diferentes do que o usuário tinha antes. O padrão `@OLD_X = @@X` permite **rastrear o estado original** e, ao final, executar `SET X = @OLD_X` para reverter.
+
+---
+
+### Parte 4
+
+10. Com `FOREIGN_KEY_CHECKS=1`, ao criar `Conta` antes de `Cliente`, o MySQL retornaria erro: "Cannot resolve table name". A solução tradicional seria criar primeiro `Cliente`, depois `TipoConta`, depois `Conta` — ordem importa. Com o flag em `0`, **a ordem é irrelevante** durante a criação. Isso é especialmente útil para scripts gerados automaticamente, que listam tabelas em ordem alfabética ou em ordem do diagrama.
+
+---
+
+## 💭 Reflexão Final
+
+Após completar esta atividade, você deve ser capaz de:
+
+✅ Ler e interpretar um diagrama ER simples.  
+✅ Justificar as cardinalidades observadas.  
+✅ Explicar **por que** o Forward Engineering começa com 3 `SET`s.  
+✅ Antecipar quando relaxar `FOREIGN_KEY_CHECKS` é prático e quando é perigoso.  
+
+> 💡 *"Diagrama é a arquitetura. Script é a construção. SET é a fundação que ninguém vê — mas que sustenta tudo."*

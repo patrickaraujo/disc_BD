@@ -176,6 +176,7 @@ ARQ13/
 │       └── COMANDOS-BD-03-bloco8.sql
 └── README.md (este arquivo)
 ```
+
 ---
 
 > 💭 *"Em transferência bancária, atomicidade não é teoria — é a diferença entre 'sistema funcionando' e 'cliente sem dinheiro'."*
